@@ -1135,6 +1135,13 @@ function addDownloadS2StuffButton(){
 }
 
 async function downloadS2Stuff(){
+    //Copy the name and surname to the clipboard
+    const spansArray = Array.from(document.querySelectorAll('SPAN'))
+    firstName = spansArray.find(e => e.textContent.trim() === 'First Name').closest('.form-control-group').querySelector('.text-field').value
+    surname = spansArray.find(e => e.textContent.trim() === 'Surname').closest('.form-control-group').querySelector('.text-field').value
+    navigator.clipboard.writeText(`${firstName} ${surname}`)
+    displayMessage(0, `Copied text: ${firstName} ${surname} to clipboard`)
+
     //Start the loading andimation
     const loadingDiv = document.querySelector('.accordion-heading.downloadS2Stuff')
     loadingDiv.classList.add('loading')
