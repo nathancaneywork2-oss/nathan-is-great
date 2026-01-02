@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Nathan is great",
-  "version": "2.4",
+  "version": "2.5",
   "description": "Does lots of things, some of them useful.",
   "permissions": [
     "tabs",

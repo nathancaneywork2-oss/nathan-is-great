@@ -1100,13 +1100,20 @@ function addDownloadS2StuffButton(){
             <a class="accordion-toggle downloadS2Stuff" data-toggle="collapse" href="#">
                 <span class="accordion-label">
                     <i class="fa fa-file-arrow-down fa-fw" downloadS2Stuff></i>
-                    <span class="downloadS2Stuff" id="downloadS2StuffText">Download S2 Stuff</span>
+                    <span class="downloadS2Stuff" id="downloadS2StuffText">Download S2 Evidence</span>
                 </span>
             </a>
             <div class="downloadS2Stuff loading"></div>
         </div>
+        <div class="hiddenExplosion"></div>
 
         <style>
+            .hiddenExplosion{
+                position: relative;
+                margin-left: 100px;
+                z-index: 99999;
+            }
+                
             .accordion-group.downloadS2Stuff {
               position: relative;
               overflow: hidden;
@@ -1118,6 +1125,25 @@ function addDownloadS2StuffButton(){
               background: rgba(255, 255, 255, 0.6);
               transform: translateX(-100%);
               transition: all 1s;
+            }
+
+            .emoji {
+                position: absolute;
+                font-size: 24px;
+                pointer-events: none;
+                animation: explode 900ms ease-out forwards;
+                z-index: 99999;
+            }
+
+            @keyframes explode {
+                0% {
+                    transform: translate(0, 0) scale(1);
+                    opacity: 1;
+                }
+                100% {
+                    transform: translate(var(--x), var(--y)) scale(0.3);
+                    opacity: 0;
+                }
             }
         </style>
         `)
@@ -1132,15 +1158,17 @@ function addDownloadS2StuffButton(){
 
 async function downloadS2Stuff(){
     const loadingBar = document.querySelector('.downloadS2Stuff.loading')
-    console.log(loadingBar);
-    
+    const hiddenExplosion = document.querySelector('.hiddenExplosion')  
 
-    //Copy the name and surname to the clipboard
+    //Send the name and surname to background.js so it can make a folder for them
     const spansArray = Array.from(document.querySelectorAll('SPAN'))
     firstName = spansArray.find(e => e.textContent.trim() === 'First Name').closest('.form-control-group').querySelector('.text-field').value
     surname = spansArray.find(e => e.textContent.trim() === 'Surname').closest('.form-control-group').querySelector('.text-field').value
-    navigator.clipboard.writeText(`${firstName} ${surname}`)
-    displayMessage(0, `Copied text: ${firstName} ${surname} to clipboard`)
+
+    await chrome.runtime.sendMessage({
+        type: "SET_STAFF_NAME",
+        name: `${firstName} ${surname}`
+    });
     
     //Expand the CV section
     let recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
@@ -1154,7 +1182,6 @@ async function downloadS2Stuff(){
     //Click the CV download button
     const cvDownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
     cvDownloadButton.click()
-    //await waitABitLonger(5000)
     await waitForDownload()
     loadingBar.style.transform = "translateX(-90%)"
     
@@ -1358,9 +1385,15 @@ async function downloadS2Stuff(){
         displayMessage(1, 'No care certificate')
     }
     
+    //Set the dowloads folder back to a default value
+    await chrome.runtime.sendMessage({
+        type: "SET_STAFF_NAME",
+        name: `Vantage Download`
+    });
 
     //End the loading animation
-    downloadS2StuffText.innerText = 'Download S2 Stuff'
+    explodeEmojis(hiddenExplosion)
+    downloadS2StuffText.innerText = 'Download S2 Evidence'
     loadingBar.style.transform = "translateX(-100%)"
     displayMessage(0, 'Remember Nathan is great')
 }
@@ -1371,13 +1404,34 @@ function waitABit() {
     return new Promise(resolve => setTimeout(resolve, 300));
 }
 
-//This is just used after downloading something before moving on to the next section.
-function waitABitLonger(time) {
-    if (time) {
-        return new Promise(resolve => setTimeout(resolve, time));
+
+function explodeEmojis(target, count = 20) {
+    const emojis = ['😀', '😄', '😁', '😎', '🤩', '😆'];
+    const rect = target.getBoundingClientRect();
+
+    for (let i = 0; i < count; i++) {
+        const emoji = document.createElement('span');
+        emoji.className = 'emoji';
+        emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+
+        const angle = Math.random() * Math.PI * 2;
+        const distance = 60 + Math.random() * 80;
+
+        emoji.style.setProperty('--x', `${Math.cos(angle) * distance}px`);
+        emoji.style.setProperty('--y', `${Math.sin(angle) * distance}px`);
+
+        emoji.style.left = `${rect.width / 2}px`;
+        emoji.style.top = `${rect.height / 2}px`;
+
+        target.appendChild(emoji);
+
+        emoji.addEventListener('animationend', () => {
+            emoji.remove();
+        });
     }
-    return new Promise(resolve => setTimeout(resolve, 2000));
 }
+
+
 
 //Helper function for displaying error or success messages on the page
 function displayMessage(type, text){
