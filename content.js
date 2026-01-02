@@ -1096,34 +1096,28 @@ function addDownloadS2StuffButton(){
     if (staffComplianceText && !document.querySelector('.downloadS2Stuff')) {
         const accordion = document.querySelector('.accordion')
         accordion.insertAdjacentHTML('beforeend', `
-        <div class="accordion-heading downloadS2Stuff">
+        <div class="accordion-group downloadS2Stuff tw:group">
             <a class="accordion-toggle downloadS2Stuff" data-toggle="collapse" href="#">
                 <span class="accordion-label">
                     <i class="fa fa-file-arrow-down fa-fw" downloadS2Stuff></i>
                     <span class="downloadS2Stuff" id="downloadS2StuffText">Download S2 Stuff</span>
                 </span>
             </a>
+            <div class="downloadS2Stuff loading"></div>
         </div>
 
         <style>
-            .accordion-heading.loading {
+            .accordion-group.downloadS2Stuff {
               position: relative;
-              background: rgba(255, 255, 255, 0.15);
               overflow: hidden;
             }
             
-            .accordion-heading.loading::after {
-              content: "";
+            .downloadS2Stuff.loading {
               position: absolute;
               inset: 0;
               background: rgba(255, 255, 255, 0.6);
               transform: translateX(-100%);
-              animation: sweep 30s ease;
-            }
-            
-            @keyframes sweep {
-              0%   { transform: translateX(-100%); }
-              100% { transform: translateX(0%); }
+              transition: all 1s;
             }
         </style>
         `)
@@ -1137,16 +1131,16 @@ function addDownloadS2StuffButton(){
 }
 
 async function downloadS2Stuff(){
+    const loadingBar = document.querySelector('.downloadS2Stuff.loading')
+    console.log(loadingBar);
+    
+
     //Copy the name and surname to the clipboard
     const spansArray = Array.from(document.querySelectorAll('SPAN'))
     firstName = spansArray.find(e => e.textContent.trim() === 'First Name').closest('.form-control-group').querySelector('.text-field').value
     surname = spansArray.find(e => e.textContent.trim() === 'Surname').closest('.form-control-group').querySelector('.text-field').value
     navigator.clipboard.writeText(`${firstName} ${surname}`)
     displayMessage(0, `Copied text: ${firstName} ${surname} to clipboard`)
-
-    //Start the loading andimation
-    const loadingDiv = document.querySelector('.accordion-heading.downloadS2Stuff')
-    loadingDiv.classList.add('loading')
     
     //Expand the CV section
     let recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
@@ -1162,6 +1156,7 @@ async function downloadS2Stuff(){
     cvDownloadButton.click()
     //await waitABitLonger(5000)
     await waitForDownload()
+    loadingBar.style.transform = "translateX(-90%)"
     
     //Expand the Reference 1 section
     recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
@@ -1173,6 +1168,7 @@ async function downloadS2Stuff(){
     const ref1DownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
     ref1DownloadButton.click()
     await waitForDownload()
+    loadingBar.style.transform = "translateX(-80%)"
     
     //Expand the Reference 2 section
     recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
@@ -1184,6 +1180,7 @@ async function downloadS2Stuff(){
     const ref2DownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
     ref2DownloadButton.click()
     await waitForDownload()
+    loadingBar.style.transform = "translateX(-70%)"
     
     //Expand the Reference 3 section
     recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
@@ -1196,9 +1193,11 @@ async function downloadS2Stuff(){
     if (ref3DownloadButton) {
         ref3DownloadButton.click()
         await waitForDownload()
+        
     } else{
         displayMessage(1, 'No reference 3')
     }
+    loadingBar.style.transform = "translateX(-60%)"
     
     //Expand the proof of ID section
     let proofOfIdSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Identification Documentation').closest('.FormFieldNonMandatory') 
@@ -1214,6 +1213,7 @@ async function downloadS2Stuff(){
     } else{
         displayMessage(1, 'No proof of ID 1')
     }
+    loadingBar.style.transform = "translateX(-50%)"
     
     //Click the second proof of ID download button
     const poid2DownloadButton = Array.from(proofOfIdSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Document 2').closest('.control-group').querySelector('.DownloadAttachmentButton')
@@ -1223,6 +1223,7 @@ async function downloadS2Stuff(){
     } else{
         displayMessage(1, 'No proof of ID 2')
     }
+    loadingBar.style.transform = "translateX(-40%)"
     
     //Expand the right to work section
     let rtwSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Right to Work Documentation').closest('.FormFieldNonMandatory') 
@@ -1262,7 +1263,7 @@ async function downloadS2Stuff(){
     } else{
         displayMessage(1, 'No photo')
     }
-    
+    loadingBar.style.transform = "translateX(-30%)"
     
     //Expand the DBS section
     let dbsSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'DBS').closest('.FormFieldNonMandatory') 
@@ -1316,6 +1317,7 @@ async function downloadS2Stuff(){
     } else{
         displayMessage(1, 'No DBS')
     }
+    loadingBar.style.transform = "translateX(-20%)"
     
     //Click overseas police check download button if it exists
     const opcDownloadButton = Array.from(dbsSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Overseas police check (only if applicable)').closest('.control-group').querySelector('.DownloadAttachmentButton')
@@ -1325,6 +1327,7 @@ async function downloadS2Stuff(){
     } else{
         displayMessage(1, 'No overseas police check')
     }
+    loadingBar.style.transform = "translateX(-10%)"
 
     //Expand the care certificate section if it exists
     let trainingSection = Array.from(Array.from(document.querySelectorAll('DIV')).find((div) => div.innerText == 'Training').closest('.FormHeader').querySelectorAll('DIV'))
@@ -1345,6 +1348,7 @@ async function downloadS2Stuff(){
     await waitABit()
 
     //Click the download care cert button
+    loadingBar.style.transform = "translateX(-0%)"
     let trainingHistorySection = Array.from(document.querySelectorAll('DIV')).find((div) => div.innerText == 'Training history').closest('.FormFieldVisible')
     careCertDownloadButton = trainingHistorySection.querySelector('.DownloadAttachmentButton')
     if (careCertDownloadButton) {
@@ -1357,7 +1361,7 @@ async function downloadS2Stuff(){
 
     //End the loading animation
     downloadS2StuffText.innerText = 'Download S2 Stuff'
-    loadingDiv.classList.remove('loading')
+    loadingBar.style.transform = "translateX(-100%)"
     displayMessage(0, 'Remember Nathan is great')
 }
 
