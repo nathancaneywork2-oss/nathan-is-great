@@ -1088,6 +1088,8 @@ document.addEventListener('click', (e)=>{
     }
 })
 
+let resolveDownloadPromise;
+
 //Add the download s2 button if it doesn't exists
 function addDownloadS2StuffButton(){
     const staffComplianceText = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Staff Compliance')
@@ -1158,7 +1160,8 @@ async function downloadS2Stuff(){
     //Click the CV download button
     const cvDownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
     cvDownloadButton.click()
-    await waitABitLonger(5000)
+    //await waitABitLonger(5000)
+    await waitForDownload()
     
     //Expand the Reference 1 section
     recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
@@ -1169,7 +1172,7 @@ async function downloadS2Stuff(){
     //Click the Reference 1 download button
     const ref1DownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
     ref1DownloadButton.click()
-    await waitABitLonger()
+    await waitForDownload()
     
     //Expand the Reference 2 section
     recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
@@ -1180,7 +1183,7 @@ async function downloadS2Stuff(){
     //Click the Reference 2 download button
     const ref2DownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
     ref2DownloadButton.click()
-    await waitABitLonger()
+    await waitForDownload()
     
     //Expand the Reference 3 section
     recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
@@ -1190,8 +1193,12 @@ async function downloadS2Stuff(){
     
     //Click the Reference 3 download button
     const ref3DownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
-    ref3DownloadButton ? ref3DownloadButton.click() : null
-    await waitABitLonger()
+    if (ref3DownloadButton) {
+        ref3DownloadButton.click()
+        await waitForDownload()
+    } else{
+        displayMessage(1, 'No reference 3')
+    }
     
     //Expand the proof of ID section
     let proofOfIdSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Identification Documentation').closest('.FormFieldNonMandatory') 
@@ -1201,13 +1208,21 @@ async function downloadS2Stuff(){
     
     //Click the first proof of ID download button
     const poid1DownloadButton = Array.from(proofOfIdSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Document 1').closest('.control-group').querySelector('.DownloadAttachmentButton')
-    poid1DownloadButton ? poid1DownloadButton.click() : displayMessage(1, 'No proof of ID 1')
-    await waitABitLonger()
+    if (poid1DownloadButton) {
+        poid1DownloadButton.click()
+        await waitForDownload()
+    } else{
+        displayMessage(1, 'No proof of ID 1')
+    }
     
     //Click the second proof of ID download button
     const poid2DownloadButton = Array.from(proofOfIdSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Document 2').closest('.control-group').querySelector('.DownloadAttachmentButton')
-    poid2DownloadButton ? poid2DownloadButton.click() : displayMessage(1, 'No proof of ID 2')
-    await waitABitLonger()
+    if (poid2DownloadButton) {
+        poid2DownloadButton.click()
+        await waitForDownload()
+    } else{
+        displayMessage(1, 'No proof of ID 2')
+    }
     
     //Expand the right to work section
     let rtwSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Right to Work Documentation').closest('.FormFieldNonMandatory') 
@@ -1243,10 +1258,11 @@ async function downloadS2Stuff(){
         });
     
         mostRecentPhoto.photoDownloadButton.click()
+        await waitForDownload()
     } else{
         displayMessage(1, 'No photo')
     }
-    await waitABitLonger()
+    
     
     //Expand the DBS section
     let dbsSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'DBS').closest('.FormFieldNonMandatory') 
@@ -1296,15 +1312,19 @@ async function downloadS2Stuff(){
         });
     
         mostRecentdbs.dbsDownloadButton.click()
+        await waitForDownload()
     } else{
         displayMessage(1, 'No DBS')
     }
-    await waitABitLonger()
     
     //Click overseas police check download button if it exists
     const opcDownloadButton = Array.from(dbsSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Overseas police check (only if applicable)').closest('.control-group').querySelector('.DownloadAttachmentButton')
-    opcDownloadButton ? opcDownloadButton.click() : displayMessage(0, 'No overseas police check')
-    await waitABitLonger()
+    if (opcDownloadButton) {
+        opcDownloadButton.click()
+        await waitForDownload()
+    } else{
+        displayMessage(1, 'No overseas police check')
+    }
 
     //Expand the care certificate section if it exists
     let trainingSection = Array.from(Array.from(document.querySelectorAll('DIV')).find((div) => div.innerText == 'Training').closest('.FormHeader').querySelectorAll('DIV'))
@@ -1327,8 +1347,12 @@ async function downloadS2Stuff(){
     //Click the download care cert button
     let trainingHistorySection = Array.from(document.querySelectorAll('DIV')).find((div) => div.innerText == 'Training history').closest('.FormFieldVisible')
     careCertDownloadButton = trainingHistorySection.querySelector('.DownloadAttachmentButton')
-    careCertDownloadButton ? careCertDownloadButton.click() : displayMessage(1, 'No care certificate')
-    await waitABitLonger()
+    if (careCertDownloadButton) {
+        careCertDownloadButton.click()
+        await waitForDownload()
+    } else{
+        displayMessage(1, 'No care certificate')
+    }
     
 
     //End the loading animation
@@ -1391,3 +1415,18 @@ function displayMessage(type, text){
     document.body.insertAdjacentHTML('beforeend', messageElement)
 }
 
+chrome.runtime.onMessage.addListener((message) => {
+  if (message.type === "DOWNLOAD_DONE") {
+    console.log(`%c Success! Download ID ${message.id} has finished.`, "color: green; font-weight: bold;")
+    if (resolveDownloadPromise) {
+      resolveDownloadPromise(); // This "wakes up" the await below
+    }
+  }
+})
+
+// 2. The "Pause" function
+function waitForDownload() {
+  return new Promise((resolve) => {
+    resolveDownloadPromise = resolve; 
+  });
+}

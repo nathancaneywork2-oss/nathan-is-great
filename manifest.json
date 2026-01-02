@@ -3,11 +3,21 @@
   "name": "Nathan is great",
   "version": "2.4",
   "description": "Does lots of things, some of them useful.",
-  "permissions": ["tabs", "downloads"],
+  "permissions": [
+    "tabs",
+    "downloads"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
   "content_scripts": [
     {
-      "matches": ["https://www.vantage-modules.co.uk/*"],
-      "js": ["content.js"]
+      "matches": [
+        "https://www.vantage-modules.co.uk/*"
+      ],
+      "js": [
+        "content.js"
+      ]
     }
   ]
 }
