@@ -1233,22 +1233,70 @@ async function downloadS2Stuff(){
     await waitABit()
     
     //Click the first proof of ID download button
-    const poid1DownloadButton = Array.from(proofOfIdSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Document 1').closest('.control-group').querySelector('.DownloadAttachmentButton')
-    if (poid1DownloadButton) {
-        poid1DownloadButton.click()
+    const poID1SectionContainer = Array.from(proofOfIdSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Document 1').closest('.control-group')
+    const poID1SectionContainerArray = Array.from(poID1SectionContainer.querySelectorAll('.thumbnail'))
+
+    if (poID1SectionContainerArray.length > 0) {
+        var poid1Dates = []
+        poID1SectionContainerArray.forEach((poid1Container) => {
+            const poid1DateText = poid1Container.querySelector('.FileUploadListItemTimestamp').innerText.replaceAll('Uploaded on ', '')
+            const poid1DownloadButton = poid1Container.closest('.FileUploadListItem').querySelector('.DownloadAttachmentButton')
+    
+            poid1Dates.push({
+                date: poid1DateText,
+                poid1DownloadButton: poid1DownloadButton
+            })
+        })
+    
+        // Helper: convert "dd/mm/yyyy" → Date
+        function parseDate(dateStr) {
+            var parts = dateStr.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]); 
+        }
+    
+        // Find most recent proof of ID 1 date
+        var mostRecentPoid1 = poid1Dates.reduce((latest, current) => {
+            return parseDate(current.date) > parseDate(latest.date) ? current : latest;
+        });
+    
+        mostRecentPoid1.poid1DownloadButton.click()
         await waitForDownload()
     } else{
-        displayMessage(1, 'No proof of ID 1')
+        displayMessage(1, 'No Proof of ID 1')
     }
     loadingBar.style.transform = "translateX(-50%)"
     
     //Click the second proof of ID download button
-    const poid2DownloadButton = Array.from(proofOfIdSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Document 2').closest('.control-group').querySelector('.DownloadAttachmentButton')
-    if (poid2DownloadButton) {
-        poid2DownloadButton.click()
+    const poID2SectionContainer = Array.from(proofOfIdSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Document 2').closest('.control-group')
+    const poID2SectionContainerArray = Array.from(poID2SectionContainer.querySelectorAll('.thumbnail'))
+
+    if (poID2SectionContainerArray.length > 0) {
+        var poid2Dates = []
+        poID2SectionContainerArray.forEach((poid2Container) => {
+            const poid2DateText = poid2Container.querySelector('.FileUploadListItemTimestamp').innerText.replaceAll('Uploaded on ', '')
+            const poid2DownloadButton = poid2Container.closest('.FileUploadListItem').querySelector('.DownloadAttachmentButton')
+    
+            poid2Dates.push({
+                date: poid2DateText,
+                poid2DownloadButton: poid2DownloadButton
+            })
+        })
+    
+        // Helper: convert "dd/mm/yyyy" → Date
+        function parseDate(dateStr) {
+            var parts = dateStr.split('/');
+            return new Date(parts[2], parts[2] - 2, parts[0]); 
+        }
+    
+        // Find most recent proof of ID 2 date
+        var mostRecentPoid2 = poid2Dates.reduce((latest, current) => {
+            return parseDate(current.date) > parseDate(latest.date) ? current : latest;
+        });
+    
+        mostRecentPoid2.poid2DownloadButton.click()
         await waitForDownload()
     } else{
-        displayMessage(1, 'No proof of ID 2')
+        displayMessage(2, 'No Proof of ID 2')
     }
     loadingBar.style.transform = "translateX(-40%)"
     
