@@ -62,6 +62,7 @@ document.addEventListener("click", (e) => {
     dateFormat()
     addMandatoryTrainingButton()
     checkAndAddTrainingCopyButtons()
+    checkAndAddTrainingMessageButtons()
   }, 100)
 })
 
@@ -83,6 +84,7 @@ setTimeout(() => {
     dateFormat()
     addMandatoryTrainingButton()
     checkAndAddTrainingCopyButtons()
+    checkAndAddTrainingMessageButtons()
 
   // When the user enters a training start date, the expiry date should be automatically added to the date next due box.
   document.addEventListener('input', (e)=> {
@@ -1065,6 +1067,103 @@ function checkAndAddTrainingCopyButtons(){
     
                 navigator.clipboard.writeText(string)
             }
+        })
+    }
+}
+
+
+function checkAndAddTrainingMessageButtons(){
+    //Add the Message training buttons and the event listener if they doesn't exist.
+    if (!document.querySelector('.rowMessage')) {
+        addTrainingMessageButtons()    
+        
+    } else{
+        //Also Add the Message training buttons and the event listener if they are all invisible.
+        let numberOfButtonsInView = 0
+        const oldButtons = document.querySelectorAll('.rowMessage')
+        oldButtons.forEach((element)=>{
+            if (element.getBoundingClientRect().width > 0) {
+                numberOfButtonsInView++
+            }
+        })
+        
+        if (numberOfButtonsInView == 0) {
+            //Remove the invisible ones before adding the new ones
+            oldButtons.forEach(element => element.remove())
+            addTrainingMessageButtons()   
+        } else{
+            console.log('Buttons already exist')
+        }
+    }
+    
+    function addTrainingMessageButtons(){
+        //Select all the traing headings
+        const headerRows = document.querySelectorAll('.resultsGroupHeader td')
+        headerRows.forEach((row)=>{
+            row.insertAdjacentHTML('beforeend', `
+                <style>
+                    .rowMessage{
+                        float: right; 
+                        background: rgba(255,255,255, 1);
+                        height: 20px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: all 0.25s;
+                        border: none;
+                    }
+    
+                    .rowMessage:hover{
+                        background: rgba(82, 139, 231, 0.5);
+                        color: rgb(255,255,255, 1);
+                    }
+                </style>
+
+                <button class="rowMessage"><i class="fa-solid fa-message rowMessage-icon"></i></button>
+            `)
+        })
+
+        function getTimeOfDay() {
+            const hour = new Date().getHours();
+
+            if (hour >= 5 && hour < 12) {
+                return 'morning';
+            } else if (hour >= 12 && hour < 18) {
+                return 'afternoon';
+            } else {
+                return 'evening';
+            }
+        }
+
+        const time = getTimeOfDay()
+
+    
+        document.addEventListener('click', (e)=>{
+            if (e.target.classList.contains('rowMessage') || e.target.classList.contains('rowMessage-icon')) {
+                const headingRow = e.target.closest('.resultsGroupHeader')
+                let string = ''
+    
+                let currentRow = headingRow.nextElementSibling
+    
+                while (currentRow && currentRow.classList.contains('resultsTableRow')) {
+                    const cells = currentRow.querySelectorAll('.resultsTableCell')
+                    const courseTitle = cells[7]?.textContent.trim() || ''
+                    const courseDate = cells[8]?.textContent.trim() || ''
+                    let tabs = ''
+                    let tabAdder = 5
+                    let tabReducer = Math.round(courseTitle.length / 8.2)
+    
+                    for (let i = 0; i < (tabAdder - tabReducer); i++) {
+                        tabs = tabs + '\t'
+                    }
+                    string += `\t• ${courseTitle}${tabs}${courseDate} \n`
+                    currentRow = currentRow.nextElementSibling
+    
+                }
+    
+                navigator.clipboard.writeText(`Good ${time},\n\nI hope you are well, it's just a reminder about the upcoming training expiring:\n\n${string}\nPlease complete these on Flexebee and let me know if you have any issues.`)
+            } 
+            
         })
     }
 }
