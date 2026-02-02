@@ -57,6 +57,26 @@ const courseList = [
     {course: 'Whistle Blowing', yearsValid: 3},
 ]
 
+const officeCourseList = [
+    {course: 'Autism', yearsValid: 3},
+    {course: 'Learning disabilities', yearsValid: 3},
+    {course: 'Complaints', yearsValid: 3},
+    {course: 'Dignity, privacy and respect', yearsValid: 1},
+    {course: 'Display Screen Equipment', yearsValid: 1},
+    {course: 'Equality and diversity', yearsValid: 1},
+    {course: 'Fire Safety', yearsValid: 1},
+    {course: 'First aid adults', yearsValid: 1},
+    {course: 'Food hygiene', yearsValid: 3},
+    {course: 'GDPR', yearsValid: 3},
+    {course: 'Health and safety', yearsValid: 3},
+    {course: 'IG & Data Security', yearsValid: 1},
+    {course: 'Infection control', yearsValid: 1},
+    {course: 'Mental health', yearsValid: 3},
+    {course: 'Safeguarding  Adults Level 3', yearsValid: 3},
+    {course: 'Safeguarding Children Level 3', yearsValid: 3},
+    {course: 'Whistle Blowing', yearsValid: 3},
+]
+
 document.addEventListener("click", (e) => {
   setTimeout(() => {
     dateFormat()
@@ -86,92 +106,101 @@ setTimeout(() => {
     checkAndAddTrainingCopyButtons()
     checkAndAddTrainingMessageButtons()
 
-  // When the user enters a training start date, the expiry date should be automatically added to the date next due box.
-  document.addEventListener('input', (e)=> {
-    if(e.target.id == 'Field-355'){
-        let expiryYears = 1
-        const inputCourseTitle = document.querySelector('#Field-355')?.closest('.FormPart')?.parentElement.parentElement.parentElement.querySelector('.item')?.textContent
-        const knownCourse = courseList.find(element => element.course == inputCourseTitle)
-        if (knownCourse) {
-            expiryYears = knownCourse.yearsValid
+    //Head office staff have different expiry dates for some courses so we check for that. 
+    const branch = Array.from(document.querySelectorAll('SPAN')).find((span) => span.textContent == 'Branch').closest('.control-group').querySelector('.selectize-input').querySelector('DIV')
+
+
+    // When the user enters a training start date, the expiry date should be automatically added to the date next due box.
+    document.addEventListener('input', (e)=> {
+        if(e.target.id == 'Field-355'){
+            let expiryYears = 1
+            const inputCourseTitle = document.querySelector('#Field-355')?.closest('.FormPart')?.parentElement.parentElement.parentElement.querySelector('.item')?.textContent
+            let knownCourse
+            if (branch && branch.textContent == 'Head Office ') {
+                knownCourse = officeCourseList.find(element => element.course == inputCourseTitle)
+            } else{
+                knownCourse = courseList.find(element => element.course == inputCourseTitle)
+            }
+            if (knownCourse) {
+                expiryYears = knownCourse.yearsValid
+            }
+
+
+            const trainingDateInput = e.target
+            const trainingExpireInput = document.querySelector('#Field-315')
+
+        //If the user has entered a complete date
+            if(trainingDateInput.value.length == 10){
+                //Get the last character of the date and add 1 to it 
+                let expiryDateYear = parseInt(trainingDateInput.value.substring(6, 10)) + expiryYears
+                let expiryDate = trainingDateInput.value.slice(0, 6) + expiryDateYear
+
+                //This becomes the expiry date
+                trainingExpireInput.value = expiryDate
+
+                // Trigger an input event to simulate user typing
+                trainingExpireInput.dispatchEvent(new Event('input', { bubbles: true }))
+                trainingExpireInput.dispatchEvent(new Event('change', { bubbles: true }))
+            }
         }
 
-
-        const trainingDateInput = e.target
-        const trainingExpireInput = document.querySelector('#Field-315')
-
-      //If the user has entered a complete date
-        if(trainingDateInput.value.length == 10){
+        // When the user enters a badge received date, the expiry date should be automatically added to the expiry date input.
+        else if(e.target.id == 'Field-259'){
+        const badgeDateInput = e.target
+        const badgeExpireInput = document.querySelector('#Field-260')
+        
+        //If the user has entered a complete date
+        if(badgeDateInput.value.length == 10){
             //Get the last character of the date and add 1 to it 
-            let expiryDateYear = parseInt(trainingDateInput.value.substring(6, 10)) + expiryYears
-            let expiryDate = trainingDateInput.value.slice(0, 6) + expiryDateYear
+            let expiryDateYear = parseInt(badgeDateInput.value.substring(6, 10)) + 1
+            let expiryDate = badgeDateInput.value.slice(0, 6) + expiryDateYear
 
             //This becomes the expiry date
-            trainingExpireInput.value = expiryDate
+            badgeExpireInput.value = expiryDate
 
             // Trigger an input event to simulate user typing
-            trainingExpireInput.dispatchEvent(new Event('input', { bubbles: true }))
-            trainingExpireInput.dispatchEvent(new Event('change', { bubbles: true }))
+            badgeExpireInput.dispatchEvent(new Event('input', { bubbles: true }));
+            badgeExpireInput.dispatchEvent(new Event('change', { bubbles: true }));
         }
+        }
+    })
+
+    //When the user clicks add in the contact log section, the default communication option should be WhatsApp
+    let allElements = Array.from(document.querySelectorAll('div'))
+    const contactLogText = allElements.find((element) => element.textContent == 'Contact Log')
+    if (contactLogText) {
+        const addButton = contactLogText.closest('.FormHeader').querySelector('.AddSubform')
+
+        addButton.addEventListener('click', (e) => {
+            setTimeout(() => {
+                const spans = Array.from(document.querySelectorAll('span'))
+                const typeOfContactText = spans.find((element) => element.textContent == 'Type of Contact')
+                if (typeOfContactText) {
+                    const contactInput = typeOfContactText.closest('.control-group').querySelectorAll('input')[1] 
+                    contactInput.click()
+                    setTimeout(() => {
+                        const option = Array.from(document.querySelectorAll('span')).find((element) => element.textContent == 'Type of Contact').closest('.control-group').querySelector('.selectize-dropdown-content').querySelectorAll('div')[4]
+                        option.click()
+
+                        setTimeout(()=> {
+                            const textBox = Array.from(document.querySelectorAll('span')).find((element) => element.textContent == 'Notes/details of contact').closest('.control-group').querySelector('textarea')
+                            textBox.focus()  
+                        }, 10)
+                        
+                    }, 20)
+                }
+            }, 200)  
+        })
     }
 
-    // When the user enters a badge received date, the expiry date should be automatically added to the expiry date input.
-    else if(e.target.id == 'Field-259'){
-      const badgeDateInput = e.target
-      const badgeExpireInput = document.querySelector('#Field-260')
-      
-      //If the user has entered a complete date
-      if(badgeDateInput.value.length == 10){
-        //Get the last character of the date and add 1 to it 
-        let expiryDateYear = parseInt(badgeDateInput.value.substring(6, 10)) + 1
-        let expiryDate = badgeDateInput.value.slice(0, 6) + expiryDateYear
-
-        //This becomes the expiry date
-        badgeExpireInput.value = expiryDate
-
-        // Trigger an input event to simulate user typing
-        badgeExpireInput.dispatchEvent(new Event('input', { bubbles: true }));
-        badgeExpireInput.dispatchEvent(new Event('change', { bubbles: true }));
-      }
+    //Change the first section into a two column view
+    const sectionDivs = document.querySelectorAll('.section-field.FormPart')
+    function changeToCompactLayout(section){
+        const sectionDivs = section.querySelectorAll(':scope > div')
+        sectionDivs.forEach((divElement)=>{
+            divElement.classList.add('FormField2x')
+        })
     }
-  })
-
-  //When the user clicks add in the contact log section, the default communication option should be WhatsApp
-  let allElements = Array.from(document.querySelectorAll('div'))
-  const contactLogText = allElements.find((element) => element.textContent == 'Contact Log')
-  if (contactLogText) {
-      const addButton = contactLogText.closest('.FormHeader').querySelector('.AddSubform')
-
-      addButton.addEventListener('click', (e) => {
-          setTimeout(() => {
-              const spans = Array.from(document.querySelectorAll('span'))
-              const typeOfContactText = spans.find((element) => element.textContent == 'Type of Contact')
-              if (typeOfContactText) {
-                  const contactInput = typeOfContactText.closest('.control-group').querySelectorAll('input')[1] 
-                  contactInput.click()
-                  setTimeout(() => {
-                      const option = Array.from(document.querySelectorAll('span')).find((element) => element.textContent == 'Type of Contact').closest('.control-group').querySelector('.selectize-dropdown-content').querySelectorAll('div')[4]
-                      option.click()
-
-                      setTimeout(()=> {
-                          const textBox = Array.from(document.querySelectorAll('span')).find((element) => element.textContent == 'Notes/details of contact').closest('.control-group').querySelector('textarea')
-                          textBox.focus()  
-                      }, 10)
-                      
-                  }, 20)
-              }
-          }, 200)  
-      })
-  }
-
-  //Change the first section into a two column view
-  const sectionDivs = document.querySelectorAll('.section-field.FormPart')
-  function changeToCompactLayout(section){
-      const sectionDivs = section.querySelectorAll(':scope > div')
-      sectionDivs.forEach((divElement)=>{
-          divElement.classList.add('FormField2x')
-      })
-  }
 
     //Change the Id and proof of address sections into a two column view
     const divsArray = Array.from(document.querySelectorAll('div'))
@@ -1142,11 +1171,16 @@ function checkAndAddTrainingMessageButtons(){
             if (e.target.classList.contains('rowMessage') || e.target.classList.contains('rowMessage-icon')) {
                 const headingRow = e.target.closest('.resultsGroupHeader')
                 let string = ''
+                let staffName = ''
     
                 let currentRow = headingRow.nextElementSibling
     
                 while (currentRow && currentRow.classList.contains('resultsTableRow')) {
                     const cells = currentRow.querySelectorAll('.resultsTableCell')
+                    const name = cells[1]?.textContent.trim() || ''
+                    if (name !== '" "') {
+                        staffName = name
+                    }
                     const courseTitle = cells[7]?.textContent.trim() || ''
                     const courseDate = cells[8]?.textContent.trim() || ''
                     let tabs = ''
@@ -1161,7 +1195,7 @@ function checkAndAddTrainingMessageButtons(){
     
                 }
     
-                navigator.clipboard.writeText(`Good ${time},\n\nI hope you are well, it's just a reminder about the upcoming training expiring:\n\n${string}\nPlease complete these on Flexebee and let me know if you have any issues.`)
+                navigator.clipboard.writeText(`Good ${time} ${staffName},\n\nI hope you are well, it's just a reminder about the upcoming training expiring:\n\n${string}\nPlease complete these on Flexebee and let me know if you have any issues. You should be able to access them here: https://portal.flexebee.co.uk/`)
             } 
             
         })
@@ -1171,7 +1205,7 @@ function checkAndAddTrainingMessageButtons(){
 //This just changes the default drop down in the staff list to 1000 per page
 function changeDefaultRecordsPerPage() {
     setTimeout(() => {
-        const showing = document.querySelectorAll('SELECT.ReportResultsPagesToShowInput')[6] 
+        const showing = document.querySelectorAll('SELECT.ReportResultsPagesToShowInput')[10] 
         if (showing) {
             showing.value = "1000" 
             showing.dispatchEvent(new Event('change'))
