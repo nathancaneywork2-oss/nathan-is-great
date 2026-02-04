@@ -1170,8 +1170,10 @@ function checkAndAddTrainingMessageButtons(){
         document.addEventListener('click', (e)=>{
             if (e.target.classList.contains('rowMessage') || e.target.classList.contains('rowMessage-icon')) {
                 const headingRow = e.target.closest('.resultsGroupHeader')
-                let string = ''
+                let flexebeeString =  '\nFlexebee:\n'
+                let classroomString = '\nClassroom:\n'
                 let staffName = ''
+                const practicalCourses = ['Basic Life Support Adults', 'Basic Life Support Paediatrics', 'PMVA (Practical)']
     
                 let currentRow = headingRow.nextElementSibling
     
@@ -1179,7 +1181,7 @@ function checkAndAddTrainingMessageButtons(){
                     const cells = currentRow.querySelectorAll('.resultsTableCell')
                     const name = cells[1]?.textContent.trim() || ''
                     if (name !== '" "') {
-                        staffName = name
+                        staffName = name.split(' ')[0]
                     }
                     const courseTitle = cells[7]?.textContent.trim() || ''
                     const courseDate = cells[8]?.textContent.trim() || ''
@@ -1190,12 +1192,34 @@ function checkAndAddTrainingMessageButtons(){
                     for (let i = 0; i < (tabAdder - tabReducer); i++) {
                         tabs = tabs + '\t'
                     }
-                    string += `\t• ${courseTitle}${tabs}${courseDate} \n`
+                    if (!practicalCourses.includes(courseTitle)) {
+                        flexebeeString += `\t• ${courseTitle}${tabs}${courseDate} \n`
+                    } else{
+                        classroomString += `\t• ${courseTitle}${tabs}${courseDate} \n`
+                    }
                     currentRow = currentRow.nextElementSibling
     
                 }
-    
-                navigator.clipboard.writeText(`Good ${time} ${staffName},\n\nI hope you are well, it's just a reminder about the upcoming training expiring:\n\n${string}\nPlease complete these on Flexebee and let me know if you have any issues. You should be able to access them here: https://portal.flexebee.co.uk/`)
+                
+                flexebeeString = flexebeeString.length > 12 ? flexebeeString : ''
+                classroomString = classroomString.length > 13 ? classroomString : ''
+
+                let finalText = `Good ${time} ${staffName},\n\nI hope you are well, it's just a reminder about the upcoming training expiring:\n${flexebeeString}${classroomString}\n`
+
+                if (flexebeeString.length > 11) {
+                    finalText += 'Please complete Flexebee courses here: https://portal.flexebee.co.uk/. '
+                } else{
+                    flexebeeString = ''
+                }
+
+                if (classroomString.length > 12) {
+                    finalText += 'Classroom courses will need to be booked by you, I have listed some approved providers below, please send the certificates here before the expiry dates.\n\n• RG Reed - rgreedtraining.co.uk\n• KAOM (PMVA only) - kaom.co.uk \n• Health and Safety Group - healthandsafetygroup.com \n• Care Force - careforcetrainings.co.uk '
+                } else{
+                    classroomString = ''
+                }
+                
+                finalText += '\n\nPlease let me know if you have any issues. \n'
+                navigator.clipboard.writeText(finalText)
             } 
             
         })
