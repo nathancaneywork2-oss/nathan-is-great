@@ -107,8 +107,11 @@ setTimeout(() => {
     checkAndAddTrainingMessageButtons()
 
     //Head office staff have different expiry dates for some courses so we check for that. 
-    const branch = Array.from(document.querySelectorAll('SPAN')).find((span) => span.textContent == 'Branch').closest('.control-group').querySelector('.selectize-input').querySelector('DIV')
-
+    const branchText = Array.from(document.querySelectorAll('SPAN')).find((span) => span.textContent == 'Branch')
+    let branch = null
+    if (branchText) {
+        branch = branchText.closest('.control-group').querySelector('.selectize-input').querySelector('DIV')
+    }
 
     // When the user enters a training start date, the expiry date should be automatically added to the date next due box.
     document.addEventListener('input', (e)=> {
@@ -1229,10 +1232,13 @@ function checkAndAddTrainingMessageButtons(){
 //This just changes the default drop down in the staff list to 1000 per page
 function changeDefaultRecordsPerPage() {
     setTimeout(() => {
-        const showing = document.querySelectorAll('SELECT.ReportResultsPagesToShowInput')[10] 
-        if (showing) {
+        const showing = document.querySelectorAll('SELECT.ReportResultsPagesToShowInput')[11]
+        const showingECS = document.querySelectorAll('SELECT.ReportResultsPagesToShowInput')[52]
+        if (showing && showingECS) {
             showing.value = "1000" 
             showing.dispatchEvent(new Event('change'))
+            showingECS.value = "1000" 
+            showingECS.dispatchEvent(new Event('change'))
         }
     }, 8500)
 }
