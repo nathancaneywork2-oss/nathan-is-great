@@ -1175,8 +1175,11 @@ function checkAndAddTrainingMessageButtons(){
                 const headingRow = e.target.closest('.resultsGroupHeader')
                 let flexebeeString =  '\nFlexebee:\n'
                 let classroomString = '\nClassroom:\n'
+                let elearningString = '\nExternal eLearning:\n'
                 let staffName = ''
-                const practicalCourses = ['Basic Life Support Adults', 'Basic Life Support Paediatrics', 'PMVA (Practical)']
+                const practicalCourses = ['Basic Life Support Adults', 'Basic Life Support Paediatrics', 'PMVA (Practical)', 'ILS Adults (Practical)', 'ILS Paediatrics (Practical)']
+                const elearnings = ['Tourettes (Not mandatory for all)', 'Eating Disorders (Not mandatory for all)', 'Domestic Abuse (Not mandatory for all)']
+                const elearningsObject = [{name: 'Tourettes (Not mandatory for all)', url: 'https://www.tourettes-action.org.uk/155-elearning.html'}, {name: 'Eating Disorders (Not mandatory for all)', url: 'https://portal.e-lfh.org.uk/Component/Details/696272'}, {name: 'Domestic Abuse (Not mandatory for all)', url: 'https://portal.e-lfh.org.uk/Component/Details/391662'}]
     
                 let currentRow = headingRow.nextElementSibling
     
@@ -1195,10 +1198,14 @@ function checkAndAddTrainingMessageButtons(){
                     for (let i = 0; i < (tabAdder - tabReducer); i++) {
                         tabs = tabs + '\t'
                     }
-                    if (!practicalCourses.includes(courseTitle)) {
-                        flexebeeString += `\t• ${courseTitle}${tabs}${courseDate} \n`
-                    } else{
+                    if (practicalCourses.includes(courseTitle)) {
                         classroomString += `\t• ${courseTitle}${tabs}${courseDate} \n`
+                        
+                    } else if (elearningsObject.some((elearning) => elearning.name.includes(courseTitle))) {
+                        const elearning = elearningsObject.find((elearningCourse)=> elearningCourse.name.includes(courseTitle))
+                        elearningString += `\t• ${courseTitle}${tabs}${courseDate} - ${elearning.url} \n`
+                    } else{
+                        flexebeeString += `\t• ${courseTitle}${tabs}${courseDate} \n`
                     }
                     currentRow = currentRow.nextElementSibling
     
@@ -1206,8 +1213,9 @@ function checkAndAddTrainingMessageButtons(){
                 
                 flexebeeString = flexebeeString.length > 12 ? flexebeeString : ''
                 classroomString = classroomString.length > 13 ? classroomString : ''
+                elearningString = elearningString.length > 21 ? elearningString : ''
 
-                let finalText = `Good ${time} ${staffName},\n\nI hope you are well, it's just a reminder about the upcoming training expiring:\n${flexebeeString}${classroomString}\n`
+                let finalText = `Good ${time} ${staffName},\n\nI hope you are well, it's just a reminder about the upcoming training expiring:\n${flexebeeString}${classroomString}${elearningString}\n`
 
                 if (flexebeeString.length > 11) {
                     finalText += 'Please complete Flexebee courses here: https://portal.flexebee.co.uk/. '
@@ -1222,7 +1230,7 @@ function checkAndAddTrainingMessageButtons(){
                 }
                 
                 finalText += '\n\nPlease let me know if you have any issues. \n'
-                navigator.clipboard.writeText(finalText)
+                navigator.clipboard.writeText(finalText.replaceAll('(Not mandatory for all)', '\t\t\t'))
             } 
             
         })
