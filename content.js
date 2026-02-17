@@ -1178,7 +1178,6 @@ function checkAndAddTrainingMessageButtons(){
                 let elearningString = '\nExternal eLearning:\n'
                 let staffName = ''
                 const practicalCourses = ['Basic Life Support Adults', 'Basic Life Support Paediatrics', 'PMVA (Practical)', 'ILS Adults (Practical)', 'ILS Paediatrics (Practical)']
-                const elearnings = ['Tourettes (Not mandatory for all)', 'Eating Disorders (Not mandatory for all)', 'Domestic Abuse (Not mandatory for all)']
                 const elearningsObject = [{name: 'Tourettes (Not mandatory for all)', url: 'https://www.tourettes-action.org.uk/155-elearning.html'}, {name: 'Eating Disorders (Not mandatory for all)', url: 'https://portal.e-lfh.org.uk/Component/Details/696272'}, {name: 'Domestic Abuse (Not mandatory for all)', url: 'https://portal.e-lfh.org.uk/Component/Details/391662'}]
     
                 let currentRow = headingRow.nextElementSibling
@@ -1224,12 +1223,17 @@ function checkAndAddTrainingMessageButtons(){
                 }
 
                 if (classroomString.length > 12) {
-                    finalText += 'Classroom courses will need to be booked by you, I have listed some approved providers below, please send the certificates here before the expiry dates.\n\n• RG Reed - rgreedtraining.co.uk\n• KAOM (PMVA only) - kaom.co.uk \n• Health and Safety Group - healthandsafetygroup.com \n• Care Force - careforcetrainings.co.uk '
+                    finalText += 'Classroom courses will need to be booked by you, I have listed some approved providers below, please send the certificates here before the expiry dates.\n\n• RG Reed - rgreedtraining.co.uk\n• KAOM (PMVA only) - kaom.co.uk \n• Health and Safety Group - healthandsafetygroup.com \n• Care Force - careforcetrainings.co.uk \n\n'
                 } else{
                     classroomString = ''
                 }
+
+                if (!finalText.includes('PMVA (Practical)')) {
+                    // The 'g' flag stands for 'global' (replace all)
+                    finalText = finalText.replace(/• KAOM \(PMVA only\) - kaom\.co\.uk \n/g, '');
+                }
                 
-                finalText += '\n\nPlease let me know if you have any issues. \n'
+                finalText += 'Please let me know if you have any issues. \n'
                 navigator.clipboard.writeText(finalText.replaceAll('(Not mandatory for all)', '\t\t\t'))
             } 
             
