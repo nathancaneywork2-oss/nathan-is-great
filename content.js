@@ -1042,8 +1042,6 @@ function checkAndAddTrainingCopyButtons(){
             //Remove the invisible ones before adding the new ones
             oldButtons.forEach(element => element.remove())
             addTrainingCopyButtons()   
-        } else{
-            console.log('Buttons already exist')
         }
     }
     
@@ -1123,9 +1121,7 @@ function checkAndAddTrainingMessageButtons(){
             //Remove the invisible ones before adding the new ones
             oldButtons.forEach(element => element.remove())
             addTrainingMessageButtons()   
-        } else{
-            console.log('Buttons already exist')
-        }
+        } 
     }
     
     function addTrainingMessageButtons(){
@@ -1167,6 +1163,22 @@ function checkAndAddTrainingMessageButtons(){
             }
         }
 
+        function isDateStringNotMoreThan30DaysInTheFuture(dateString) {
+            //Split the "22/03/2026" string
+            const dateArray = dateString.split('/').map(Number)
+            const [day, month, year] = dateArray
+
+            //Create a Date object (Note: Months are 0-indexed in JS, so subtract 1)
+            const convertedCourseDate = new Date(year, month - 1, day)
+
+            const now = new Date()
+            const futureThreshold = new Date()
+            futureThreshold.setDate(now.getDate() + 30)
+
+            //Compare
+            return convertedCourseDate <= futureThreshold
+        }
+
         const time = getTimeOfDay()
 
     
@@ -1204,7 +1216,11 @@ function checkAndAddTrainingMessageButtons(){
                         const elearning = elearningsObject.find((elearningCourse)=> elearningCourse.name.includes(courseTitle))
                         elearningString += `\t• ${courseTitle}${tabs}${courseDate} - ${elearning.url} \n`
                     } else{
-                        flexebeeString += `\t• ${courseTitle}${tabs}${courseDate} \n`
+                        if (isDateStringNotMoreThan30DaysInTheFuture(courseDate)) {
+                            //There is no point of reminding people about Flexebee courses that are more
+                            //than 30 days in the future as the website won't let you enrol them. 
+                            flexebeeString += `\t• ${courseTitle}${tabs}${courseDate} \n`
+                        }
                     }
                     currentRow = currentRow.nextElementSibling
     
@@ -1234,6 +1250,10 @@ function checkAndAddTrainingMessageButtons(){
                 }
                 
                 finalText += 'Please let me know if you have any issues. \n'
+
+                if (flexebeeString.length < 12 && classroomString.length < 13 && elearningString.length < 21) {
+                    finalText = ''
+                }
                 navigator.clipboard.writeText(finalText.replaceAll('(Not mandatory for all)', '\t\t\t'))
             } 
             
