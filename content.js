@@ -1190,7 +1190,7 @@ function checkAndAddTrainingMessageButtons(){
                 let elearningString = '\nExternal eLearning:\n'
                 let staffName = ''
                 const practicalCourses = ['Basic Life Support Adults', 'Basic Life Support Paediatrics', 'PMVA (Practical)', 'ILS Adults (Practical)', 'ILS Paediatrics (Practical)']
-                const elearningsObject = [{name: 'Tourettes (Not mandatory for all)', url: 'https://www.tourettes-action.org.uk/155-elearning.html'}, {name: 'Eating Disorders (Not mandatory for all)', url: 'https://portal.e-lfh.org.uk/Component/Details/696272'}, {name: 'Domestic Abuse (Not mandatory for all)', url: 'https://portal.e-lfh.org.uk/Component/Details/391662'}]
+                const elearningsObject = [{name: 'Tourettes (Not mandatory for all)', url: 'https://www.tourettes-action.org.uk/155-elearning.html'}, {name: 'Eating Disorders (Not mandatory for all)', url: 'https://portal.e-lfh.org.uk/Component/Details/696272'}, {name: 'Domestic Abuse (Not mandatory for all)', url: 'https://courses.idas.org.uk/courses/domestic-abuse-essential-training/'}]
     
                 let currentRow = headingRow.nextElementSibling
     
