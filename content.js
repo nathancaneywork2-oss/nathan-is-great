@@ -155,7 +155,7 @@ setTimeout(() => {
         //If the user has entered a complete date
         if(badgeDateInput.value.length == 10){
             //Get the last character of the date and add 1 to it 
-            let expiryDateYear = parseInt(badgeDateInput.value.substring(6, 10)) + 1
+            let expiryDateYear = parseInt(badgeDateInput.value.substring(6, 10)) + 3
             let expiryDate = badgeDateInput.value.slice(0, 6) + expiryDateYear
 
             //This becomes the expiry date
@@ -376,11 +376,13 @@ function addMandatoryTrainingButton(){
                                         var(--fill-color) calc(var(--progress) * 1%),
                                         var(--track-color) 0
                                     );
+                                    filter: drop-shadow(0 0 8px var(--fill-color));
                                     
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
-                                    transition: --progress 0.5s ease-in-out;
+
+                                    transition: --progress 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
                                 }
 
                                 .training__page.loading .inner {
