@@ -332,9 +332,14 @@ function addMandatoryTrainingButton(){
                             <style>
                                 :root{
                                     --size: 400px;
-                                    --progress: 0;
                                     --track-color: #eee;
                                     --fill-color: #3498db;
+                                }
+
+                                @property --progress {
+                                    syntax: '<number>'; /* or <percentage> */
+                                    inherits: false;
+                                    initial-value: 0;
                                 }
 
                                 .training__background{
@@ -362,7 +367,7 @@ function addMandatoryTrainingButton(){
                                     transition: all 1s;
                                 }
 
-                                .training__page.loading{
+                                .training__page.loading {
                                     position: relative;
                                     width: var(--size);
                                     height: var(--size);
@@ -371,10 +376,11 @@ function addMandatoryTrainingButton(){
                                         var(--fill-color) calc(var(--progress) * 1%),
                                         var(--track-color) 0
                                     );
+                                    
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
-                                    transition: all 1s;
+                                    transition: --progress 0.5s ease-in-out;
                                 }
 
                                 .training__page.loading .inner {
@@ -853,9 +859,7 @@ function addMandatoryTrainingButton(){
 
                 let courseInterval = null
                 const rowCourseNames = []
-                //let trainingCheckBoxArray = ['Autism', 'Basic Life Support Adults']
                 let trainingCheckBoxArray = []
-                //addMultipleTraining('01/01/2001','01/01/2002','Test')
                 function addMultipleTraining(completionDate, expiryDate, provider) {  
                     let trainingHistorySection = Array.from(document.querySelectorAll('.FormHeaderLabel')).find((element) => element.innerText == 'Training history').closest('.FormPart') 
 
@@ -988,7 +992,9 @@ function addMandatoryTrainingButton(){
 
                         //Update the circle loading animation every time the loop progreses  
                         const percentage = i / trainingCheckBoxArray.length * 100
-                        document.documentElement.style.setProperty("--progress", percentage);
+                        const loadingCircle = document.querySelector('.training__page.loading')
+                        loadingCircle.style.setProperty('--progress', percentage);
+
                         if (i >= trainingCheckBoxArray.length) {
                             clearInterval(courseInterval)
                             document.querySelector('.training__background').remove()
