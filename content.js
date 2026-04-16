@@ -105,6 +105,7 @@ setTimeout(() => {
     addMandatoryTrainingButton()
     checkAndAddTrainingCopyButtons()
     checkAndAddTrainingMessageButtons()
+    addCheckDBSButton()
 
     //Head office staff have different expiry dates for some courses so we check for that. 
     const branchText = Array.from(document.querySelectorAll('SPAN')).find((span) => span.textContent == 'Branch')
@@ -162,8 +163,8 @@ setTimeout(() => {
             badgeExpireInput.value = expiryDate
 
             // Trigger an input event to simulate user typing
-            badgeExpireInput.dispatchEvent(new Event('input', { bubbles: true }));
-            badgeExpireInput.dispatchEvent(new Event('change', { bubbles: true }));
+            badgeExpireInput.dispatchEvent(new Event('input', { bubbles: true }))
+            badgeExpireInput.dispatchEvent(new Event('change', { bubbles: true }))
         }
         }
     })
@@ -1738,4 +1739,85 @@ function waitForDownload() {
   return new Promise((resolve) => {
     resolveDownloadPromise = resolve; 
   });
+}
+
+function addCheckDBSButton() {
+    //1. Create the check DBS button if it does not exist
+    const idLabel = Array.from(document.querySelectorAll('SPAN')).find((span)=> span.innerText == 'ID').parentElement
+    checkDBSButtonExists = document.querySelector('.checkDBSButton') ? true : false
+
+    if (!checkDBSButtonExists) {
+        idLabel.insertAdjacentHTML('afterbegin', `
+            <style>
+                .checkDBSButton{
+                    margin-right: 20px;
+                    transition: all 0.25s;
+                }
+            </style>
+            <button class="checkDBSButton">Check DBS</button>
+        `)    
+    }
+
+    //1. When the check DBS button is clicked, scrape the DBS fields 
+    document.addEventListener('click', (e)=>{
+        if (e.target.classList.contains('checkDBSButton')) {
+            //Click the most recent DBS row
+            const dbsDocumentationContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'DBS').closest('.FormHeader')
+            const dbsRows = Array.from(dbsDocumentationContainer.querySelectorAll('.SubformSummaryItem'))
+            if (dbsRows.length > 0) {
+                const mosteRecentDateRow = dbsRows.map((row)=>{
+                    const mosteRecentDateRow = dbsRows.map((row)=>{
+                        const rowDate = row.querySelector('.DeleteSubformButtonCell')?.nextElementSibling.querySelector('.SummaryTableCellInner')
+                        const [day, month, year] = rowDate.textContent.split("/").map(Number)
+                        return { original: rowDate, date: new Date(year, month - 1, day) }
+                    })
+                    .sort((a, b) => b.date - a.date)[0].original
+
+                    mosteRecentDateRow?.click()
+                })
+            }
+
+            //If the DBS 3 month date isn't in the future, add 3 months to it
+            const threeMonthUSInput = document.querySelector("input[name='Field-1836']")
+            const threeMonthDateString = threeMonthUSInput.value
+
+            if (threeMonthDateString != '') {
+                // 1. Parse the string (DD/MM/YYYY)
+                const [day, month, year] = threeMonthDateString.split('/').map(Number)
+                const inputDate = new Date(year, month - 1, day) // Months are 0-indexed in JS
+
+                // 2. Get "Today"
+                const today = new Date()
+
+                // 3. If NOT after today, add 3 months
+                if (inputDate <= today) {
+                    // .setMonth() automatically handles the year increment if month > 11
+                    inputDate.setMonth(inputDate.getMonth() + 3)
+                }
+
+                // 4. Format back to DD/MM/YYYY and change the input
+                const formattedDate = [
+                    String(inputDate.getDate()).padStart(2, '0'),
+                    String(inputDate.getMonth() + 1).padStart(2, '0'),
+                    inputDate.getFullYear()
+                ].join('/')
+
+                threeMonthUSInput.value = formattedDate
+                threeMonthUSInput.dispatchEvent(new Event('input', { bubbles: true }))
+                threeMonthUSInput.dispatchEvent(new Event('change', { bubbles: true }))
+            }
+
+
+            //Get fields
+            let [userName, userSurname] = document.querySelectorAll('.dropdown-toggle')[1]?.innerText.split('.')
+            userName = userName.charAt(0).toUpperCase() + userName.slice(1)
+            userSurname = userSurname.charAt(0).toUpperCase() + userSurname.slice(1)
+
+            let surname = Array.from(document.querySelectorAll('SPAN')).find((span)=> span.innerText == 'Surname').parentElement.parentElement.querySelector('.text-field').value
+            let DOB = Array.from(document.querySelectorAll('SPAN')).find((span)=> span.innerText == 'Date of birth').parentElement.parentElement.querySelector('.input-small').value.split('/')
+            let dbsNumber = Array.from(document.querySelectorAll('SPAN')).find((span)=> span.innerText == 'DBS Number').parentElement.parentElement.querySelector('.text-field').value
+
+            chrome.runtime.sendMessage({ action: "START_DBS", payload: {surname: surname, DOB: DOB, dbsNumber: dbsNumber, userName: userName, userSurname: userSurname} })
+        }
+    })
 }

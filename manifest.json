@@ -1,23 +1,20 @@
 {
   "manifest_version": 3,
   "name": "Nathan is great",
-  "version": "2.9",
+  "version": "4.0",
   "description": "Does lots of things, some of them useful.",
-  "permissions": [
-    "tabs",
-    "downloads"
-  ],
+  "permissions": ["tabs", "downloads", "storage"],
   "background": {
     "service_worker": "background.js"
   },
   "content_scripts": [
     {
-      "matches": [
-        "https://www.vantage-modules.co.uk/*"
-      ],
-      "js": [
-        "content.js"
-      ]
+      "matches": ["https://www.vantage-modules.co.uk/*"],
+      "js": ["content.js"]
+    },
+    {
+      "matches": ["https://secure.crbonline.gov.uk/crsc/*"], 
+      "js": ["dbs-script.js"]
     }
   ]
 }
