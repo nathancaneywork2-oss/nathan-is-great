@@ -1847,7 +1847,7 @@ function addCheckRecButton() {
     //Create the check recruitment button if it does not exist
     const idLabel = Array.from(document.querySelectorAll('SPAN')).find((span)=> span.innerText == 'First Name').parentElement
     checkRecButtonExists = document.querySelector('.checkRecButton') ? true : false
-
+    
     if (!checkRecButtonExists) {
         const checkRecBtn = document.createElement('button')
         checkRecBtn.className = 'checkRecButton'
@@ -1870,6 +1870,207 @@ function addCheckRecButton() {
 
     document.addEventListener('click', async (e)=>{
         if (e.target.classList.contains('checkRecButton')) {
+            document.body.insertAdjacentHTML('beforeend', `
+                <style>
+                    .rec__background{
+                        z-index: 9999999;
+                        width: 100%;
+                        height: 100vh;
+                        background: rgba(0, 0, 0, 0.2);
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
+                    
+                    .rec__circle {
+                        width: 300px;   
+                        height: 300px;
+                        background:#e2b29f;
+                        border-radius: 100%;
+                          display: -webkit-box;
+                          display: -moz-box;
+                          display: -ms-flexbox;
+                          -moz-box-align: center;
+                          -ms-box-align: center;
+                          -webkit-box-align: center;
+                          box-align: center;
+                          -moz-box-pack: center;
+                          -ms-box-pack: center;
+                          -webkit-box-pack: center;
+                          box-pack: center;
+                          -moz-transform: translate3d(0, 0, 0);
+                          -ms-transform: translate3d(0, 0, 0);
+                          -webkit-transform: translate3d(0, 0, 0);
+                          transform: translate3d(0, 0, 0);
+                    }
+
+                    .clearfix {
+                      zoom: 1;
+                    }
+                    .clearfix:before, .clearfix:after {
+                      display: block;
+                      height: 0;
+                      overflow: hidden;
+                    }
+                    .clearfix:after {
+                      clear: both;
+                    }
+                    
+                    .rabbit {
+                      width: 5em;
+                      height: 3em;
+                      background: #ffffff;
+                      border-radius: 70% 90% 60% 50%;
+                      position: relative;
+                      box-shadow: -0.2em 1em 0 -0.75em #b78e81;
+                      -moz-transform: rotate(0deg) translate(-2em, 0);
+                      -ms-transform: rotate(0deg) translate(-2em, 0);
+                      -webkit-transform: rotate(0deg) translate(-2em, 0);
+                      transform: rotate(0deg) translate(-2em, 0);
+                      animation: hop 1s infinite linear;
+                      z-index: 1;
+                    }
+                    .no-flexbox .rabbit {
+                      margin: 10em auto 0;
+                    }
+                    .rabbit:before {
+                      content: "";
+                      position: absolute;
+                      width: 1em;
+                      height: 1em;
+                      background: white;
+                      border-radius: 100%;
+                      top: 0.5em;
+                      left: -0.3em;
+                      box-shadow: 4em 0.4em 0 -0.35em #3f3334, 0.5em 1em 0 white, 4em 1em 0 -0.3em white, 4em 1em 0 -0.3em white, 4em 1em 0 -0.4em white;
+                      animation: kick 1s infinite linear;
+                    }
+                    .rabbit:after {
+                      content: "";
+                      position: absolute;
+                      width: .75em;
+                      height: 2em;
+                      background: white;
+                      border-radius: 50% 100% 0 0;
+                      -moz-transform: rotate(-30deg);
+                      -ms-transform: rotate(-30deg);
+                      -webkit-transform: rotate(-30deg);
+                      transform: rotate(-30deg);
+                      right: 1em;
+                      top: -1em;
+                      border-top: 1px solid #f7f5f4;
+                      border-left: 1px solid #f7f5f4;
+                      box-shadow: -0.5em 0em 0 -0.1em white;
+                    }
+                    
+                    .clouds {
+                      background: white;
+                      width: 2em;
+                      height: 2em;
+                      border-radius: 100% 100% 0 0;
+                      position: relative;
+                      top: -5em;
+                      filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+                      opacity: 0;
+                      -moz-transform: translate(0, 0);
+                      -ms-transform: translate(0, 0);
+                      -webkit-transform: translate(0, 0);
+                      transform: translate(0, 0);
+                      animation: cloudy 1s infinite linear forwards;
+                      box-shadow: 5em 2em 0 -0.3em white, -2em 2em 0 0 white;
+                    }
+                    .clouds:before, .clouds:after {
+                      content: '';
+                      position: absolute;
+                      box-shadow: 5em 2em 0 -0.3em white, -2em 2em 0 white;
+                    }
+                    .clouds:before {
+                      width: 1.25em;
+                      height: 1.25em;
+                      border-radius: 100% 100% 0 100%;
+                      background: white;
+                      left: -30%;
+                      bottom: 0;
+                    }
+                    .clouds:after {
+                      width: 1.5em;
+                      height: 1.5em;
+                      border-radius: 100% 100% 100% 0;
+                      background: white;
+                      right: -30%;
+                      bottom: 0;
+                    }
+                    
+                    @keyframes hop {
+                      20% {
+                        -moz-transform: rotate(-10deg) translate(1em, -2em);
+                        -ms-transform: rotate(-10deg) translate(1em, -2em);
+                        -webkit-transform: rotate(-10deg) translate(1em, -2em);
+                        transform: rotate(-10deg) translate(1em, -2em);
+                        box-shadow: -0.2em 3em 0 -1em #b78e81;
+                      }
+                      40% {
+                        -moz-transform: rotate(10deg) translate(3em, -4em);
+                        -ms-transform: rotate(10deg) translate(3em, -4em);
+                        -webkit-transform: rotate(10deg) translate(3em, -4em);
+                        transform: rotate(10deg) translate(3em, -4em);
+                        box-shadow: -0.2em 3.25em 0 -1.1em #b78e81;
+                      }
+                      60%,75% {
+                        -moz-transform: rotate(0) translate(4em, 0);
+                        -ms-transform: rotate(0) translate(4em, 0);
+                        -webkit-transform: rotate(0) translate(4em, 0);
+                        transform: rotate(0) translate(4em, 0);
+                        box-shadow: -0.2em 1em 0 -0.75em #b78e81;
+                      }
+                    }
+                    @keyframes kick {
+                      20%,50% {
+                        box-shadow: 4em 0.4em 0 -0.35em #3f3334, 0.5em 1.5em 0 white, 4em 1.75em 0 -0.3em white, 4em 1.75em 0 -0.3em white, 4em 1.9em 0 -0.4em white;
+                      }
+                      40% {
+                        box-shadow: 4em 0.4em 0 -0.35em #3f3334, 0.5em 2em 0 white, 4em 1.75em 0 -0.3em white, 4.2em 1.75em 0 -0.2em white, 4.4em 1.9em 0 -0.2em white;
+                      }
+                    }
+                    @keyframes cloudy {
+                      40% {
+                        filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=75);
+                        opacity: 0.75;
+                        -moz-transform: translate(-3em, 0);
+                        -ms-transform: translate(-3em, 0);
+                        -webkit-transform: translate(-3em, 0);
+                        transform: translate(-3em, 0);
+                      }
+                      55% {
+                        filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=0);
+                        opacity: 0;
+                        -moz-transform: translate(-4em, 0);
+                        -ms-transform: translate(-4em, 0);
+                        -webkit-transform: translate(-4em, 0);
+                        transform: translate(-4em, 0);
+                      }
+                      90% {
+                        -moz-transform: translate(0, 0);
+                        -ms-transform: translate(0, 0);
+                        -webkit-transform: translate(0, 0);
+                        transform: translate(0, 0);
+                      }
+                    }
+
+
+                </style>
+                
+                <div class="rec__background">
+                    <div class="rec__circle">
+                        <div class="rabbit"></div>
+                        <div class="clouds"></div>
+                    </div>
+                </div>
+            `)
+            
             const firstName = Array.from(document.querySelectorAll('span')).find(e => e.textContent.trim() === 'First Name').closest('.form-control-group').querySelector('.text-field').value
             const nationality = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nationality').closest('.control-group').querySelector('.item').textContent
             let expectationsDocExists = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Expectations Document').closest('.form-control-group').querySelector('.thumbnails').querySelectorAll('.FileUploadListItem').length > 0
@@ -1880,7 +2081,7 @@ function addCheckRecButton() {
             let podId = '•&nbsp;&nbsp;&nbsp;&nbsp;X 2 proof of ID'
             let overseasPoliceCheck = '•&nbsp;&nbsp;&nbsp;&nbsp;Overseas police check'
             let dbs = '•&nbsp;&nbsp;&nbsp;&nbsp;DBS on Update Service – Must be enhanced, child and adult.'
-            let poa = '•&nbsp;&nbsp;&nbsp;&nbsp;X 2 posted proof of addresses. These are the ones that get posted to you- bank statement, Council tax bill, Utility bill, within the last 3 months -Cannot accept online statements.'
+            let poa = '•&nbsp;&nbsp;&nbsp;&nbsp;X 2 posted proof of addresses - These are the ones that get posted to you- bank statement, Council tax bill, Utility bill, within the last 3 months -Cannot accept online statements.'
             let docuSigns = expectationsDocExists ? null : '•&nbsp;&nbsp;&nbsp;&nbsp;DocuSigns  - You should receive a separate email with this link.'
             let imms = '•&nbsp;&nbsp;&nbsp;&nbsp;Proof of immunisations (if possible) – If you don’t have these, please just complete the DocuSign Health Declaration.'
 
@@ -1927,15 +2128,15 @@ function addCheckRecButton() {
                 const poId1Expiry = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Identification Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).filter(e => e.textContent.trim() === 'Document 1 Expiry')[1].querySelector('input').value
                 const poId2Expiry = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Identification Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).filter(e => e.textContent.trim() === 'Document 2 Expiry')[1].querySelector('input').value
                 
-                let poID1OK = poid1FileExists && isStringDateinTheFuture(poId1Expiry)
-                let poID2OK = poid2FileExists && isStringDateinTheFuture(poId2Expiry)
+                let poID1OK = poid1FileExists && isRTWStringDateValid(poId1Expiry)
+                let poID2OK = poid2FileExists && isRTWStringDateValid(poId2Expiry)
 
                 if (poID1OK && poID2OK) {
                     podId = null
                 } else if (poID1OK || poID2OK) {
-                    podId = `•&nbsp;&nbsp;&nbsp;&nbsp;X2 Posted proof of addresses. These are the ones that get posted to you- bank statement, Council tax bill, Utility bill, within the last 3 months -Cannot accept online statements.`
+                    podId = `•&nbsp;&nbsp;&nbsp;&nbsp;X1 Proof of ID`
                 } else{
-                    podId = `•&nbsp;&nbsp;&nbsp;&nbsp;X2 Posted proof of addresses. These are the ones that get posted to you- bank statement, Council tax bill, Utility bill, within the last 3 months -Cannot accept online statements.`
+                    podId = `•&nbsp;&nbsp;&nbsp;&nbsp;X2 Proof of ID`
                 }
             } 
 
@@ -1961,17 +2162,19 @@ function addCheckRecButton() {
             }
 
             //Proof address section
+
             const poaContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Proof of address Documentation').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
             if (poaContainer.length > 0) {
+                
                 //Expand the Proof of address section if it exists, click on the last one if there's more than one.
                 const poaButton = poaContainer[poaContainer.length - 1].querySelector('.SummaryTableCell')
                 poaButton.click()
+                
                 await waitABit(300)
 
                 //Just check the files exist, don't worry about dates
                 const poa1FileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Proof of address Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Document 1').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
                 const poa2FileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Proof of address Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Document 2').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
-
                 if (poa1FileExists && poa2FileExists) {
                     poa = null
                 } else if (poa1FileExists || poa2FileExists) {
@@ -1979,6 +2182,7 @@ function addCheckRecButton() {
                 } else{
                     poa = `•&nbsp;&nbsp;&nbsp;&nbsp;X 2 posted proof of addresses - Bank statement, Council tax bill, Utility bill, within the last 3 months (Cannot accept online statements)`
                 }
+                
             } 
 
             //Health Information section
@@ -2066,6 +2270,12 @@ function addCheckRecButton() {
             ]
             
             navigator.clipboard.write(data)
+            const background = document.querySelector('.rec__background')
+            if (background) {
+                background.remove()
+            }
+            window.scrollTo(0, 0)
+            displayMessage(0, 'List Coppied')
         }
     })
 }
@@ -2126,3 +2336,5 @@ function convertHTMLToText(text){
         .replaceAll('</b>', '')
         .replaceAll('<a href="https://portal.flexebee.co.uk/">Flexebee Training</a>', 'Flexebee Training - https://portal.flexebee.co.uk')
 }
+
+
