@@ -77,6 +77,28 @@ const officeCourseList = [
     {course: 'Whistle Blowing', yearsValid: 3},
 ]
 
+const flexebeeTrainingListBeforeCompliant = [
+    {course: 'Autism', yearsValid: 1},
+    {course: 'Conflicts', yearsValid: 1},
+    {course: 'Dignity, privacy and respect', yearsValid: 1},
+    {course: 'Equality and diversity', yearsValid: 1},
+    {course: 'Fire Safety', yearsValid: 3},
+    {course: 'Health and safety', yearsValid: 3},
+    {course: 'Infection control', yearsValid: 1},
+    {course: 'Learning disabilities', yearsValid: 1},
+    {course: 'Mental Capacity Act', yearsValid: 1},
+    {course: 'Deprivation of Liberty Safeguards', yearsValid: 1},
+    {course: 'Safeguarding  Adults Level 3', yearsValid: 3},
+    {course: 'Safeguarding Children Level 3', yearsValid: 3},
+]
+
+const practicalTrainingListBeforeCompliant = [
+    {course: 'Basic Life Support Adults', yearsValid: 1},
+    {course: 'Basic Life Support Paediatrics', yearsValid: 1},
+    {course: 'PMVA (Practical)', yearsValid: 1},
+]
+
+
 document.addEventListener("click", (e) => {
   setTimeout(() => {
     dateFormat()
@@ -98,8 +120,9 @@ document.addEventListener("input", () => {
   }, 100)
 })
 
-// Run the date colouring and addMandatory functions when the page first loads, but them it 8.5 seconds to load.
+// Run all my lovely functions when the page first loads, but them it 8.5 seconds to load.
 setTimeout(() => {
+    addCheckRecButton()
     addDownloadS2StuffButton()
     dateFormat()
     addMandatoryTrainingButton()
@@ -219,7 +242,7 @@ setTimeout(() => {
 }, 8500)
 
 function dateFormat() {
-  const dateCells = document.querySelectorAll(".SummaryTableCellInner");
+  const dateCells = document.querySelectorAll(".SummaryTableCellInner")
 
   function isValidDate(dateString) {
     // Check if the date format is DD/MM/YYYY
@@ -1160,18 +1183,6 @@ function checkAndAddTrainingMessageButtons(){
             `)
         })
 
-        function getTimeOfDay() {
-            const hour = new Date().getHours();
-
-            if (hour >= 5 && hour < 12) {
-                return 'morning';
-            } else if (hour >= 12 && hour < 18) {
-                return 'afternoon';
-            } else {
-                return 'evening';
-            }
-        }
-
         function isDateStringNotMoreThan30DaysInTheFuture(dateString) {
             //Split the "22/03/2026" string
             const dateArray = dateString.split('/').map(Number)
@@ -1242,7 +1253,7 @@ function checkAndAddTrainingMessageButtons(){
                 let finalText = `Good ${time} ${staffName},\n\nI hope you are well, it's just a reminder about the upcoming training expiring:\n${flexebeeString}${classroomString}${elearningString}\n`
 
                 if (flexebeeString.length > 11) {
-                    finalText += 'Please complete Flexebee courses here: https://portal.flexebee.co.uk/. '
+                    finalText += 'You can complete Flexebee courses here: https://portal.flexebee.co.uk/. '
                 } else{
                     flexebeeString = ''
                 }
@@ -1378,7 +1389,7 @@ async function downloadS2Stuff(){
     let recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
     const cvButton = Array.from(recruitmentSectionDiv.querySelectorAll('DIV')).find((div) => div.textContent == 'CV')
     cvButton.click()
-    await waitABit()
+    await waitABit(300)
     
     let downloadS2StuffText = document.querySelector('#downloadS2StuffText')
     downloadS2StuffText.innerText = 'OK bare with...'
@@ -1393,7 +1404,7 @@ async function downloadS2Stuff(){
     recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
     const ref1Button = Array.from(recruitmentSectionDiv.querySelectorAll('DIV')).find((div) => div.textContent == 'Reference 1')
     ref1Button.click()
-    await waitABit()
+    await waitABit(300)
     
     //Click the Reference 1 download button
     const ref1DownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
@@ -1405,7 +1416,7 @@ async function downloadS2Stuff(){
     recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
     const ref2Button = Array.from(recruitmentSectionDiv.querySelectorAll('DIV')).find((div) => div.textContent == 'Reference 2')
     ref2Button.click()
-    await waitABit()
+    await waitABit(300)
     
     //Click the Reference 2 download button
     const ref2DownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
@@ -1417,7 +1428,7 @@ async function downloadS2Stuff(){
     recruitmentSectionDiv = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Recruitment Documentation').closest('.FormFieldNonMandatory') 
     const ref3Button = Array.from(recruitmentSectionDiv.querySelectorAll('DIV')).find((div) => div.textContent == 'Reference 3')
     ref3Button ? ref3Button.click() : displayMessage(1, 'No reference 3')
-    await waitABit()
+    await waitABit(300)
     
     //Click the Reference 3 download button
     const ref3DownloadButton = Array.from(recruitmentSectionDiv.querySelectorAll('SPAN')).find((span) => span.textContent == 'Documentation upload').closest('.control-group').querySelector('.DownloadAttachmentButton')
@@ -1434,7 +1445,7 @@ async function downloadS2Stuff(){
     let proofOfIdSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Identification Documentation').closest('.FormFieldNonMandatory') 
     const proofOfIdButton = proofOfIdSection.querySelector('.SubformSummaryItem .DeleteSubformButtonCell').nextElementSibling
     proofOfIdButton.click()
-    await waitABit()
+    await waitABit(300)
     
     //Click the first proof of ID download button
     const poID1SectionContainer = Array.from(proofOfIdSection.querySelectorAll('SPAN')).find((span) => span.textContent == 'Document 1').closest('.control-group')
@@ -1508,7 +1519,7 @@ async function downloadS2Stuff(){
     let rtwSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Right to Work Documentation').closest('.FormFieldNonMandatory') 
     const rtwButton = rtwSection.querySelector('.SubformSummaryItem .DeleteSubformButtonCell').nextElementSibling
     rtwButton.click()
-    await waitABit()
+    await waitABit(300)
     
     //Find the photo with the most recent date and click it's download button
     rtwSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'Right to Work Documentation').closest('.FormFieldNonMandatory') 
@@ -1562,7 +1573,7 @@ async function downloadS2Stuff(){
     } else{
         displayMessage(1, 'No DBS')
     }
-    await waitABit()
+    await waitABit(300)
     
     //Find the DBS with the most recent date and click it's download button
     dbsSection = Array.from(document.querySelectorAll('DIV')).find((div) => div.textContent == 'DBS').closest('.FormFieldNonMandatory') 
@@ -1613,7 +1624,7 @@ async function downloadS2Stuff(){
     const careCertificate = trainingSection.find((div) => div.innerText == 'Care Certificate')
     careCertificate ? careCertificate.click() : displayMessage(1, 'No care certificate')
     downloadS2StuffText.innerText = 'Nearly there'
-    await waitABit()
+    await waitABit(300)
 
     //Expand the care cert training history section if it exists
     let trainingHistorySectionRows = Array.from(document.querySelectorAll('DIV')).find((div) => div.innerText == 'Training history').closest('.FormHeader').querySelector('.SummaryTable').querySelectorAll('.SubformSummaryItem')
@@ -1624,7 +1635,7 @@ async function downloadS2Stuff(){
     } else{
         displayMessage(1, 'No care certificate')
     }
-    await waitABit()
+    await waitABit(300)
 
     //Click the download care cert button
     loadingBar.style.transform = "translateX(-0%)"
@@ -1652,8 +1663,8 @@ async function downloadS2Stuff(){
 
 
 //This is just used between clicking on things to give sections time to expand
-function waitABit() {
-    return new Promise(resolve => setTimeout(resolve, 300));
+function waitABit(time) {
+    return new Promise(resolve => setTimeout(resolve, time))
 }
 
 
@@ -1747,15 +1758,25 @@ function addCheckDBSButton() {
     checkDBSButtonExists = document.querySelector('.checkDBSButton') ? true : false
 
     if (!checkDBSButtonExists) {
-        idLabel.insertAdjacentHTML('afterbegin', `
-            <style>
-                .checkDBSButton{
-                    margin-right: 20px;
-                    transition: all 0.25s;
-                }
-            </style>
-            <button class="checkDBSButton">Check DBS</button>
-        `)    
+        // Create the button via JS and use inline styles + mouse events
+        const checkBtn = document.createElement('button')
+        checkBtn.className = 'checkDBSButton'
+        checkBtn.textContent = 'Check DBS'
+        checkBtn.style.marginRight = '20px'
+        checkBtn.style.transition = 'all 0.25s'
+        checkBtn.style.backgroundColor = 'rgba(0,0,0,0)'
+        checkBtn.style.border = '1px solid black'
+        checkBtn.style.cursor = 'pointer'
+
+        checkBtn.addEventListener('mouseenter', () => {
+            checkBtn.style.backgroundColor = 'rgba(0,0,0,0.1)'
+        })
+        checkBtn.addEventListener('mouseleave', () => {
+            checkBtn.style.backgroundColor = 'rgba(0,0,0,0)'
+        })
+
+        // Insert at the start of the container
+        idLabel.prepend(checkBtn)
     }
 
     //1. When the check DBS button is clicked, scrape the DBS fields 
@@ -1820,4 +1841,288 @@ function addCheckDBSButton() {
             chrome.runtime.sendMessage({ action: "START_DBS", payload: {surname: surname, DOB: DOB, dbsNumber: dbsNumber, userName: userName, userSurname: userSurname} })
         }
     })
+}
+
+function addCheckRecButton() {
+    //Create the check recruitment button if it does not exist
+    const idLabel = Array.from(document.querySelectorAll('SPAN')).find((span)=> span.innerText == 'First Name').parentElement
+    checkRecButtonExists = document.querySelector('.checkRecButton') ? true : false
+
+    if (!checkRecButtonExists) {
+        const checkRecBtn = document.createElement('button')
+        checkRecBtn.className = 'checkRecButton'
+        checkRecBtn.textContent = 'Copy Outstanding List'
+        checkRecBtn.style.marginRight = '20px'
+        checkRecBtn.style.transition = 'all 0.25s'
+        checkRecBtn.style.backgroundColor = 'rgba(0,0,0,0)'
+        checkRecBtn.style.border = '1px solid black'
+        checkRecBtn.style.cursor = 'pointer'
+
+        checkRecBtn.addEventListener('mouseenter', () => {
+            checkRecBtn.style.backgroundColor = 'rgba(0,0,0,0.1)'
+        })
+        checkRecBtn.addEventListener('mouseleave', () => {
+            checkRecBtn.style.backgroundColor = 'rgba(0,0,0,0)'
+        })
+
+        idLabel.prepend(checkRecBtn)
+    }
+
+    document.addEventListener('click', async (e)=>{
+        if (e.target.classList.contains('checkRecButton')) {
+            const firstName = Array.from(document.querySelectorAll('span')).find(e => e.textContent.trim() === 'First Name').closest('.form-control-group').querySelector('.text-field').value
+            const nationality = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nationality').closest('.control-group').querySelector('.item').textContent
+            let expectationsDocExists = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Expectations Document').closest('.form-control-group').querySelector('.thumbnails').querySelectorAll('.FileUploadListItem').length > 0
+            
+            let proofOfNi = '•&nbsp;&nbsp;&nbsp;&nbsp;National Insurance number- this can be a letter with your NI on it or a P60/P45'
+            let photo = '•&nbsp;&nbsp;&nbsp;&nbsp;Photo for ID badge on a white background, no filters.'
+            let rtwDocs = '•&nbsp;&nbsp;&nbsp;&nbsp;Right to work documents, share code'
+            let podId = '•&nbsp;&nbsp;&nbsp;&nbsp;X 2 proof of ID'
+            let overseasPoliceCheck = '•&nbsp;&nbsp;&nbsp;&nbsp;Overseas police check'
+            let dbs = '•&nbsp;&nbsp;&nbsp;&nbsp;DBS on Update Service – Must be enhanced, child and adult.'
+            let poa = '•&nbsp;&nbsp;&nbsp;&nbsp;X 2 posted proof of addresses. These are the ones that get posted to you- bank statement, Council tax bill, Utility bill, within the last 3 months -Cannot accept online statements.'
+            let docuSigns = expectationsDocExists ? null : '•&nbsp;&nbsp;&nbsp;&nbsp;DocuSigns  - You should receive a separate email with this link.'
+            let imms = '•&nbsp;&nbsp;&nbsp;&nbsp;Proof of immunisations (if possible) – If you don’t have these, please just complete the DocuSign Health Declaration.'
+
+            //Right to work section
+            const rtwContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Right to Work Documentation').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
+            if (rtwContainer.length > 0) {
+                //Expand the right to work section if it exists
+                const rightToWorkButton = rtwContainer[rtwContainer.length - 1].querySelector('.SummaryTableCell') //Click on the last one if there's more than one
+                rightToWorkButton.click()
+                await waitABit(300)
+
+                //Check the NI and photo files are there
+                const numberOfNiFiles = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'National insurance number evidence').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length
+                proofOfNi = numberOfNiFiles > 0 ? null : proofOfNi
+                const numberOfPhotoFiles = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Photograph').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length
+                photo = numberOfPhotoFiles > 0 ? null : photo
+
+                //If they are British there should be a passport file or a right to work file, we don't check expiry dates 
+                //If not, there needs to be a RTW file and the expiry date can't be in the past
+                
+                const numberOfRTWFiles = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Right to work check (only if applicable)').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length
+                if (['British', 'English', 'Irish', 'Scottish', 'Northern Irish'].includes(nationality.trim())) {
+                    const numberOfPassportFiles = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Passport').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length
+                    //const passportExiryDate = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Right to Work Documentation').closest('.FormHeader').parentElement.querySelectorAll('SPAN')).find(e => e.textContent.trim() === 'Passport Expiry').closest('.form-control-group').querySelector('input').value
+                    rtwDocs = numberOfPassportFiles > 0 || numberOfRTWFiles > 0  ? null : rtwDocs
+                } else{
+                    const rtwExiryDate = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Right to Work Documentation').closest('.FormHeader').parentElement.querySelectorAll('SPAN')).find(e => e.textContent.trim() === 'Right to work check Expiry').closest('.form-control-group').querySelector('input').value
+                    rtwDocs = numberOfRTWFiles > 0 && isRTWStringDateValid(rtwExiryDate) ? null : rtwDocs
+                }
+            } 
+
+            //Proof of ID section
+            const poidContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Identification Documentation').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
+            if (poidContainer.length > 0) {
+                //Expand the Proof of ID section if it exists, click on the last one if there's more than one.
+                const poIdButton = poidContainer[poidContainer.length - 1].querySelector('.SummaryTableCell')
+                poIdButton.click()
+                await waitABit(300)
+
+                //For both ID documents, the file needs to be there and the expiry date must be in the future
+                const poid1FileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Identification Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Document 1').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                const poid2FileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Identification Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Document 2').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                
+                const poId1Expiry = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Identification Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).filter(e => e.textContent.trim() === 'Document 1 Expiry')[1].querySelector('input').value
+                const poId2Expiry = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Identification Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).filter(e => e.textContent.trim() === 'Document 2 Expiry')[1].querySelector('input').value
+                
+                let poID1OK = poid1FileExists && isStringDateinTheFuture(poId1Expiry)
+                let poID2OK = poid2FileExists && isStringDateinTheFuture(poId2Expiry)
+
+                if (poID1OK && poID2OK) {
+                    podId = null
+                } else if (poID1OK || poID2OK) {
+                    podId = `•&nbsp;&nbsp;&nbsp;&nbsp;X2 Posted proof of addresses. These are the ones that get posted to you- bank statement, Council tax bill, Utility bill, within the last 3 months -Cannot accept online statements.`
+                } else{
+                    podId = `•&nbsp;&nbsp;&nbsp;&nbsp;X2 Posted proof of addresses. These are the ones that get posted to you- bank statement, Council tax bill, Utility bill, within the last 3 months -Cannot accept online statements.`
+                }
+            } 
+
+            //DBS section
+            const dbsContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'DBS').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
+            if (dbsContainer.length > 0) {
+                //Expand the Proof of ID section if it exists, click on the last one if there's more than one.
+                const dbsButton = dbsContainer[dbsContainer.length - 1].querySelector('.SummaryTableCell')
+                dbsButton.click()
+                await waitABit(300)
+
+                //They arn't British, check if there is an overseas police check file
+                const overseasPoliceCheckExists = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Overseas police check (only if applicable)').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                overseasPoliceCheck =  overseasPoliceCheckExists ? null : overseasPoliceCheck
+                if (['British', 'English', 'Irish', 'Scottish', 'Northern Irish'].includes(nationality.trim())) {
+                    overseasPoliceCheck = null
+                }
+
+                //Check the DBS file exists and is in date
+                const dbsExists = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'DBS certificate').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                const dbsExiryDate = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'DBS').closest('.FormHeader').parentElement.querySelectorAll('SPAN')).find(e => e.textContent.trim() === 'Annual Expiry date').closest('.form-control-group').querySelector('input').value
+                dbs = dbsExists && isStringDateinTheFuture(dbsExiryDate) ? null : dbs
+            }
+
+            //Proof address section
+            const poaContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Proof of address Documentation').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
+            if (poaContainer.length > 0) {
+                //Expand the Proof of address section if it exists, click on the last one if there's more than one.
+                const poaButton = poaContainer[poaContainer.length - 1].querySelector('.SummaryTableCell')
+                poaButton.click()
+                await waitABit(300)
+
+                //Just check the files exist, don't worry about dates
+                const poa1FileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Proof of address Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Document 1').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                const poa2FileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Proof of address Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Document 2').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+
+                if (poa1FileExists && poa2FileExists) {
+                    poa = null
+                } else if (poa1FileExists || poa2FileExists) {
+                    poa = `•&nbsp;&nbsp;&nbsp;&nbsp;X 1 posted proof of address - Bank statement, Council tax bill, Utility bill, within the last 3 months (Cannot accept online statements).`
+                } else{
+                    poa = `•&nbsp;&nbsp;&nbsp;&nbsp;X 2 posted proof of addresses - Bank statement, Council tax bill, Utility bill, within the last 3 months (Cannot accept online statements)`
+                }
+            } 
+
+            //Health Information section
+            const healthContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Health Information').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
+            if (healthContainer.length > 0) {
+                //Expand the Health Information section if it exists, click on the last one if there's more than one.
+                const healthButton = healthContainer[healthContainer.length - 1].querySelector('.SummaryTableCell')
+                healthButton.click()
+                await waitABit(300)
+
+                const immsFileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Health Information').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Immunisation history').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                imms = immsFileExists ? null : imms
+            }
+
+            //Health Declarations section
+            const healthDecContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Health Declarations').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
+            if (healthDecContainer.length > 0) {
+                //Expand the Proof of address section if it exists, click on the last one if there's more than one.
+                const healthDecButton = healthDecContainer[healthDecContainer.length - 1].querySelector('.SummaryTableCell')
+                healthDecButton.click()
+                await waitABit(300)
+
+                const immsDecExiryDate = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Health Declarations').closest('.FormHeader').parentElement.querySelectorAll('SPAN')).find(e => e.textContent.trim() === 'Date Uploaded').closest('.form-control-group').querySelector('input').value
+                const immsDecExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Health Declarations').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Health Declaration').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                imms = immsDecExists && isStringDateLessThanAYearOld(immsDecExiryDate)  ? null : imms
+            }
+
+            //Training
+            let training = ''
+            const trainingRows = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Training').closest('.FormHeader').querySelectorAll(".SummaryTableCellInner"))
+            
+            function addTraining(trainingObject){
+                let coursesOutstanding = false
+                
+                //Loop through the practicalTrainingListBeforeCompliant var and see if each course exists in the training table.
+                trainingObject.forEach((item, index) => {
+                    
+                    const foundCourse = trainingRows.find((element)=> element.textContent == item.course)
+                
+                    //If the course does not exist, add it to the outstanding training string.
+                    if (!foundCourse) {
+                        if (!training.includes(item.course)) {
+                            training += `</br>•&nbsp;&nbsp;&nbsp;&nbsp;${item.course}`
+                            coursesOutstanding = true
+                        }
+                    } else{
+                        //If the course exists, check it has an expiry date that's in the future, if it isn't, add it to the outstanding training string.
+                        const foundCourseDate = foundCourse.parentElement.parentElement.querySelectorAll('.SummaryTableCellInner')[2].textContent
+                        if (!isStringDateinTheFuture(foundCourseDate)) {
+                            training += `</br>•&nbsp;&nbsp;&nbsp;&nbsp;${item.course}`
+                            coursesOutstanding = true                         
+                        }
+                    }
+
+                    //If it's the last one in the list, add return, looks nicer. 
+                    if (index == trainingObject.length - 1) {
+                        training += '</br>'
+                    } 
+                })
+
+                return coursesOutstanding
+            }
+
+            //Add the training headings, but then remove them if there are no outstanding courses
+            training += `</br><b>Classroom Training</b>`
+            if (!addTraining(practicalTrainingListBeforeCompliant)) {
+                training = training.replaceAll('</br><b>Classroom Training</b>', '')
+            }
+            
+            training += `</br><a href="https://portal.flexebee.co.uk/"><b>Flexebee Training</b></a>`
+            if (!addTraining(flexebeeTrainingListBeforeCompliant)) {
+                training = training.replaceAll('</br></br><a href="https://portal.flexebee.co.uk/"><b>Flexebee Training</b></a>', '')
+            }
+
+            //Copy text with HTML tags when pasting into Outlook, remove them when pasting into WhatsApp
+            const text = `Good ${getTimeOfDay()} ${firstName},</br></br>We are really pleased that you have decided to work with us and look forward to welcoming you to our team!</br></br>Before your start date, we need to complete several checks to ensure compliance with the legislation and guidance in place to keep the people we support safe. This process is essential for maintaining our commitment to safety and quality in our services.</br></br>To begin this process, please can you provide us with the following:</br></br><b>Documents</b></br>${proofOfNi ? proofOfNi + '</br>' : ''}${photo ? photo + '</br>' : ''}${podId ? podId + '</br>' : ''}${rtwDocs ? rtwDocs + '</br>' : ''}${overseasPoliceCheck ? overseasPoliceCheck + '</br>' : ''}${dbs ? dbs + '</br>' : ''}${poa ? poa + '</br>' : ''}${docuSigns ? docuSigns + '</br>' : ''}${imms ? imms + '</br>' : ''}${training}`
+            const htmlBlob = new Blob([text], { type: 'text/html' })
+            const textBlob = new Blob([convertHTMLToText(text)], { type: 'text/plain' })
+            
+            const data = [
+              new ClipboardItem({
+                'text/html': htmlBlob,
+                'text/plain': textBlob
+              })
+            ]
+            
+            navigator.clipboard.write(data)
+        }
+    })
+}
+
+//Helpers
+function getTimeOfDay() {
+    const hour = new Date().getHours()
+
+    if (hour >= 5 && hour < 12) {
+        return 'morning'
+    } else if (hour >= 12 && hour < 18) {
+        return 'afternoon'
+    } else {
+        return 'evening'
+    }
+}
+
+function isStringDateinTheFuture(date){
+    if (date == '' || date == undefined) {
+        return false
+    }
+    
+    const[day, month, year] = date.split('/').map(Number)
+    date = new Date(year, month - 1, day)
+    today = new Date()
+    return date > today
+}
+
+function isRTWStringDateValid(date){
+    //For right to work, if the date is empty we assume it never expires
+    if (date == '' || date == undefined) {
+        return true
+    }
+    
+    const[day, month, year] = date.split('/').map(Number)
+    date = new Date(year, month - 1, day)
+    today = new Date()
+    return date > today
+}
+
+function isStringDateLessThanAYearOld(date){
+    if (date == '' || date == undefined) {
+        return false
+    }
+    
+    const[day, month, year] = date.split('/').map(Number)
+    date = new Date(year, month - 1, day)
+    aYearAgo = new Date()
+    aYearAgo.setFullYear(aYearAgo.getFullYear() - 1)
+
+    return date > aYearAgo
+}
+
+function convertHTMLToText(text){
+    return text.replaceAll('</br>', '\n')
+        .replaceAll('&nbsp;&nbsp;&nbsp;&nbsp;', '\t')
+        .replaceAll('<b>', '')
+        .replaceAll('</b>', '')
+        .replaceAll('<a href="https://portal.flexebee.co.uk/">Flexebee Training</a>', 'Flexebee Training - https://portal.flexebee.co.uk')
 }
