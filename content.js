@@ -2072,18 +2072,29 @@ function addCheckRecButton() {
             `)
             
             const firstName = Array.from(document.querySelectorAll('span')).find(e => e.textContent.trim() === 'First Name').closest('.form-control-group').querySelector('.text-field').value
-            const nationality = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nationality').closest('.control-group').querySelector('.item').textContent
+            const nationalityContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nationality').closest('.control-group')
+            let nationality = null
+            if (nationalityContainer) {
+                nationality = nationalityContainer.querySelector('.item').textContent
+            } else{
+                displayMessage(2, 'Nationality not filled in')
+                nationality = 'Unset'
+            }
             let expectationsDocExists = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Expectations Document').closest('.form-control-group').querySelector('.thumbnails').querySelectorAll('.FileUploadListItem').length > 0
             
             let proofOfNi = '•&nbsp;&nbsp;&nbsp;&nbsp;National Insurance number- this can be a letter with your NI on it or a P60/P45'
             let photo = '•&nbsp;&nbsp;&nbsp;&nbsp;Photo for ID badge on a white background, no filters.'
-            let rtwDocs = '•&nbsp;&nbsp;&nbsp;&nbsp;Right to work documents, share code'
+            let rtwDocs = '•&nbsp;&nbsp;&nbsp;&nbsp;Right to work documents'
             let podId = '•&nbsp;&nbsp;&nbsp;&nbsp;X 2 proof of ID'
-            let overseasPoliceCheck = '•&nbsp;&nbsp;&nbsp;&nbsp;Overseas police check'
+            let overseasPoliceCheck = '•&nbsp;&nbsp;&nbsp;&nbsp;Overseas police check - Please complete <a href="https://www.gov.uk/government/publications/criminal-records-checks-for-overseas-applicants">here</a>.'
             let dbs = '•&nbsp;&nbsp;&nbsp;&nbsp;DBS on Update Service – Must be enhanced, child and adult.'
             let poa = '•&nbsp;&nbsp;&nbsp;&nbsp;X 2 posted proof of addresses - These are the ones that get posted to you- bank statement, Council tax bill, Utility bill, within the last 3 months -Cannot accept online statements.'
             let docuSigns = expectationsDocExists ? null : '•&nbsp;&nbsp;&nbsp;&nbsp;DocuSigns  - You should receive a separate email with this link.'
             let imms = '•&nbsp;&nbsp;&nbsp;&nbsp;Proof of immunisations (if possible) – If you don’t have these, please just complete the DocuSign Health Declaration.'
+            let diploma = '•&nbsp;&nbsp;&nbsp;&nbsp;Nurse Diploma'
+            let entryStatementCertificate = '•&nbsp;&nbsp;&nbsp;&nbsp;Nurse Entry statement certificate'
+            let liabilityInsurance = '•&nbsp;&nbsp;&nbsp;&nbsp;Nurses liability insurance'
+            let pinCheck = '•&nbsp;&nbsp;&nbsp;&nbsp;NMC Pin - We will use this to do pin check.'
 
             //Right to work section
             const rtwContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Right to Work Documentation').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
@@ -2101,15 +2112,14 @@ function addCheckRecButton() {
 
                 //If they are British there should be a passport file or a right to work file, we don't check expiry dates 
                 //If not, there needs to be a RTW file and the expiry date can't be in the past
-                
                 const numberOfRTWFiles = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Right to work check (only if applicable)').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length
                 if (['British', 'English', 'Irish', 'Scottish', 'Northern Irish'].includes(nationality.trim())) {
                     const numberOfPassportFiles = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Passport').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length
                     //const passportExiryDate = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Right to Work Documentation').closest('.FormHeader').parentElement.querySelectorAll('SPAN')).find(e => e.textContent.trim() === 'Passport Expiry').closest('.form-control-group').querySelector('input').value
-                    rtwDocs = numberOfPassportFiles > 0 || numberOfRTWFiles > 0  ? null : rtwDocs
+                    rtwDocs = numberOfPassportFiles > 0 || numberOfRTWFiles > 0  ? null : '•&nbsp;&nbsp;&nbsp;&nbsp;Right to work documents - British passport or birth certificate.'
                 } else{
                     const rtwExiryDate = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Right to Work Documentation').closest('.FormHeader').parentElement.querySelectorAll('SPAN')).find(e => e.textContent.trim() === 'Right to work check Expiry').closest('.form-control-group').querySelector('input').value
-                    rtwDocs = numberOfRTWFiles > 0 && isRTWStringDateValid(rtwExiryDate) ? null : rtwDocs
+                    rtwDocs = numberOfRTWFiles > 0 && isRTWStringDateValid(rtwExiryDate) ? null : '•&nbsp;&nbsp;&nbsp;&nbsp;Right to work documents - <a href="https://www.gov.uk/prove-right-to-work/get-a-share-code-online">Share code</a>'
                 }
             } 
 
@@ -2257,8 +2267,39 @@ function addCheckRecButton() {
                 training = training.replaceAll('</br></br><a href="https://portal.flexebee.co.uk/"><b>Flexebee Training</b></a>', '')
             }
 
+            //Nurse documents
+            const role = Array.from(document.querySelectorAll('SPAN')).find((span)=> span.textContent == 'Role').parentElement.parentElement.querySelector('.item').textContent
+            if (['RMN', 'RGN'].includes(role)) {
+                const nurseContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nurses Documentation').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
+                if (nurseContainer.length > 0) {
+                    const nurseButton = nurseContainer[nurseContainer.length - 1].querySelector('.SummaryTableCell')
+                    nurseButton.click()
+                    await waitABit(300)
+
+                    const diplomaFileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nurses Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nurse diploma').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                    diploma = diplomaFileExists ? null : diploma
+                    
+                    const entryFileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nurses Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Entry statement certificate').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                    entryStatementCertificate = entryFileExists ? null : entryStatementCertificate
+                    
+                    const pinCheckFileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nurses Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Pin check').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                    pinCheck = pinCheckFileExists ? null : pinCheck
+
+                    const liabilityContainer = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nurses Documentation').closest('.FormHeader').parentElement.querySelectorAll('*')).find((element) => element.textContent == 'Liability Insurance').parentElement.parentElement.querySelectorAll('.SubformSummaryItem')
+                    if (liabilityContainer.length > 0) {
+                        const liabilityButton = liabilityContainer[liabilityContainer.length - 1].querySelector('.SummaryTableCell')
+                        liabilityButton.click()
+                        await waitABit(300)
+
+                        const liabilityFileExists = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Liability Insurance').closest('.FormHeader').parentElement.querySelectorAll('*')).find(e => e.textContent.trim() === 'Documentation upload').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
+                        const liabilityExpiry = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Liability Insurance').closest('.FormHeader').parentElement.querySelectorAll('*')).filter(e => e.textContent.trim() === 'Expiry date')[1].querySelector('input').value
+                        liabilityInsurance = liabilityFileExists && isStringDateinTheFuture(liabilityExpiry)  ? null : liabilityInsurance
+                    }
+                }
+            }
+
             //Copy text with HTML tags when pasting into Outlook, remove them when pasting into WhatsApp
-            const text = `Good ${getTimeOfDay()} ${firstName},</br></br>We are really pleased that you have decided to work with us and look forward to welcoming you to our team!</br></br>Before your start date, we need to complete several checks to ensure compliance with the legislation and guidance in place to keep the people we support safe. This process is essential for maintaining our commitment to safety and quality in our services.</br></br>To begin this process, please can you provide us with the following:</br></br><b>Documents</b></br>${proofOfNi ? proofOfNi + '</br>' : ''}${photo ? photo + '</br>' : ''}${podId ? podId + '</br>' : ''}${rtwDocs ? rtwDocs + '</br>' : ''}${overseasPoliceCheck ? overseasPoliceCheck + '</br>' : ''}${dbs ? dbs + '</br>' : ''}${poa ? poa + '</br>' : ''}${docuSigns ? docuSigns + '</br>' : ''}${imms ? imms + '</br>' : ''}${training}`
+            const text = `Good ${getTimeOfDay()} ${firstName},</br></br>We are really pleased that you have decided to work with us and look forward to welcoming you to our team!</br></br>Before your start date, we need to complete several checks to ensure compliance with the legislation and guidance in place to keep the people we support safe. This process is essential for maintaining our commitment to safety and quality in our services.</br></br>To begin this process, please can you provide us with the following:</br></br><b>Documents</b></br>${proofOfNi ? proofOfNi + '</br>' : ''}${photo ? photo + '</br>' : ''}${podId ? podId + '</br>' : ''}${rtwDocs ? rtwDocs + '</br>' : ''}${overseasPoliceCheck ? overseasPoliceCheck + '</br>' : ''}${dbs ? dbs + '</br>' : ''}${poa ? poa + '</br>' : ''}${docuSigns ? docuSigns + '</br>' : ''}${imms ? imms + '</br>' : ''}${['RGN', 'RMN'].includes(role) ? `${diploma ? diploma + '</br>' : ''}${entryStatementCertificate ? entryStatementCertificate + '</br>' : ''}${liabilityInsurance ? liabilityInsurance + '</br>' : ''}${pinCheck ? pinCheck + '</br>' : ''}` : ''}${training}`
             const htmlBlob = new Blob([text], { type: 'text/html' })
             const textBlob = new Blob([convertHTMLToText(text)], { type: 'text/plain' })
             
@@ -2276,6 +2317,11 @@ function addCheckRecButton() {
             }
             window.scrollTo(0, 0)
             displayMessage(0, 'List Coppied')
+        } else if (e.target.classList.contains('rec__background')) {
+            const background = document.querySelector('.rec__background')
+            if (background) {
+                background.remove()
+            }
         }
     })
 }
@@ -2335,6 +2381,8 @@ function convertHTMLToText(text){
         .replaceAll('<b>', '')
         .replaceAll('</b>', '')
         .replaceAll('<a href="https://portal.flexebee.co.uk/">Flexebee Training</a>', 'Flexebee Training - https://portal.flexebee.co.uk')
+        .replaceAll('<a href="https://www.gov.uk/government/publications/criminal-records-checks-for-overseas-applicants">here</a>', 'here https://www.gov.uk/government/publications/criminal-records-checks-for-overseas-applicants')
+        .replaceAll('<a href="https://www.gov.uk/prove-right-to-work/get-a-share-code-online">Share code</a>', 'Please generate a share code here https://www.gov.uk/prove-right-to-work/get-a-share-code-online')
 }
 
 
