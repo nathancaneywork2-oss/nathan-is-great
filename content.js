@@ -1883,6 +1883,7 @@ function addCheckRecButton() {
                         display: flex;
                         justify-content: center;
                         align-items: center;
+                        perspective: 1000px;
                     }
                     
                     .rec__circle {
@@ -1890,21 +1891,22 @@ function addCheckRecButton() {
                         height: 300px;
                         background:#e2b29f;
                         border-radius: 100%;
-                          display: -webkit-box;
-                          display: -moz-box;
-                          display: -ms-flexbox;
-                          -moz-box-align: center;
-                          -ms-box-align: center;
-                          -webkit-box-align: center;
-                          box-align: center;
-                          -moz-box-pack: center;
-                          -ms-box-pack: center;
-                          -webkit-box-pack: center;
-                          box-pack: center;
-                          -moz-transform: translate3d(0, 0, 0);
-                          -ms-transform: translate3d(0, 0, 0);
-                          -webkit-transform: translate3d(0, 0, 0);
-                          transform: translate3d(0, 0, 0);
+                        display: -webkit-box;
+                        display: -moz-box;
+                        display: -ms-flexbox;
+                        -moz-box-align: center;
+                        -ms-box-align: center;
+                        -webkit-box-align: center;
+                        box-align: center;
+                        -moz-box-pack: center;
+                        -ms-box-pack: center;
+                        -webkit-box-pack: center;
+                        box-pack: center;
+                        -moz-transform: translate3d(0, 0, 0);
+                        -ms-transform: translate3d(0, 0, 0);
+                        -webkit-transform: translate3d(0, 0, 0);
+                        transform: translate3d(0, 0, 0);
+                        transition: all .5s;
                     }
 
                     .clearfix {
@@ -2311,10 +2313,21 @@ function addCheckRecButton() {
             ]
             
             navigator.clipboard.write(data)
-            const background = document.querySelector('.rec__background')
-            if (background) {
-                background.remove()
-            }
+            // const background = document.querySelector('.rec__background')
+            // if (background) {
+            //     background.remove()
+            // }
+
+            const rec__circle = document.querySelector('.rec__circle')
+            rec__circle.style.width = '700px'
+            rec__circle.style.height = '600px'
+            rec__circle.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'
+            rec__circle.style.borderRadius = '10px'
+            rec__circle.style.padding = '20px'
+            rec__circle.style.overflowY = 'scroll'
+            rec__circle.style.scrollbarWidth = 'none'
+            rec__circle.innerHTML = `${text}`
+
             window.scrollTo(0, 0)
             displayMessage(0, 'List Coppied')
         } else if (e.target.classList.contains('rec__background')) {
