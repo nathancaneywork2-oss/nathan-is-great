@@ -98,6 +98,35 @@ const practicalTrainingListBeforeCompliant = [
     {course: 'PMVA (Practical)', yearsValid: 1},
 ]
 
+//Support Workers mandatory within 6 month list
+const swMandatoryWithin6MonthFlexebee = [
+    {course: 'ADHD', yearsValid: 3},
+    {course: 'Adverse Childhood experiences', yearsValid: 3},
+    {course: 'Child sexual exploitation', yearsValid: 3},
+    {course: 'Communication & Record Keeping', yearsValid: 3},
+    {course: 'Complaints', yearsValid: 3},
+    {course: 'COSHH', yearsValid: 3},
+    {course: 'County Lines and knife crime', yearsValid: 3},
+    {course: 'Duty of candour', yearsValid: 3},
+    {course: 'Epilepsy', yearsValid: 3},
+    {course: 'Food hygiene', yearsValid: 3},
+    {course: 'GDPR', yearsValid: 3},
+    {course: 'IG & Data Security', yearsValid: 3},
+    {course: 'Lone Working', yearsValid: 3},
+    {course: 'Medication Online', yearsValid: 3},
+    {course: 'Mental health', yearsValid: 3},
+    {course: 'Positive Behaviour Support', yearsValid: 3},
+    {course: 'Preventing Radicalization', yearsValid: 3},
+    {course: 'Safeguarding  Adults Level 3', yearsValid: 3},
+    {course: 'Safeguarding Children Level 3', yearsValid: 3},
+    {course: 'Substance Misuse', yearsValid: 3},
+    {course: 'Whistle Blowing', yearsValid: 3},
+]
+
+const swMandatoryWithin6MonthPractical = [
+    {course: 'Moving and Handling (Practical)', yearsValid: 3},
+]
+
 
 document.addEventListener("click", (e) => {
   setTimeout(() => {
@@ -2258,6 +2287,15 @@ function addCheckRecButton() {
                 return coursesOutstanding
             }
 
+            const status = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Status').parentElement.querySelector('.item').textContent
+            
+            //If they are onboarding the training list is smaller than if they are registered
+            if (status != 'Onboarding') {
+                practicalTrainingListBeforeCompliant.push(...swMandatoryWithin6MonthPractical)
+                flexebeeTrainingListBeforeCompliant.push(...swMandatoryWithin6MonthFlexebee)
+            }
+            
+            
             //Add the training headings, but then remove them if there are no outstanding courses
             training += `</br><b>Classroom Training</b>`
             if (!addTraining(practicalTrainingListBeforeCompliant)) {
