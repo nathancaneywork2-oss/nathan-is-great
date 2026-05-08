@@ -2287,29 +2287,17 @@ function addCheckRecButton() {
                 return coursesOutstanding
             }
 
-            const status = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Status').parentElement.querySelector('.item').textContent
-            
-            //If they are onboarding the training list is smaller than if they are registered
-            if (status != 'Onboarding') {
-                practicalTrainingListBeforeCompliant.push(...swMandatoryWithin6MonthPractical)
-                flexebeeTrainingListBeforeCompliant.push(...swMandatoryWithin6MonthFlexebee)
-            }
-            
-            
-            //Add the training headings, but then remove them if there are no outstanding courses
-            training += `</br><b>Classroom Training</b>`
-            if (!addTraining(practicalTrainingListBeforeCompliant)) {
-                training = training.replaceAll('</br><b>Classroom Training</b>', '')
-            }
-            
-            training += `</br><a href="https://portal.flexebee.co.uk/"><b>Flexebee Training</b></a>`
-            if (!addTraining(flexebeeTrainingListBeforeCompliant)) {
-                training = training.replaceAll('</br></br><a href="https://portal.flexebee.co.uk/"><b>Flexebee Training</b></a>', '')
-            }
 
             //Nurse documents
             const role = Array.from(document.querySelectorAll('SPAN')).find((span)=> span.textContent == 'Role').parentElement.parentElement.querySelector('.item').textContent
             if (['RMN', 'RGN'].includes(role)) {
+                //Nurses need ILS instead of BLS, find and replace these in in the practicalTrainingListBeforeCompliant array.
+                const blsKey = practicalTrainingListBeforeCompliant.find((object) => object.course == 'Basic Life Support Adults')
+                const plsKey = practicalTrainingListBeforeCompliant.find((object) => object.course == 'Basic Life Support Paediatrics')
+                blsKey.course = 'ILS Adults (Practical)'
+                plsKey.course = 'ILS Paediatrics (Practical)'
+
+                //Find the nurses section and expand it
                 const nurseContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Nurses Documentation').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
                 if (nurseContainer.length > 0) {
                     const nurseButton = nurseContainer[nurseContainer.length - 1].querySelector('.SummaryTableCell')
@@ -2336,6 +2324,27 @@ function addCheckRecButton() {
                         liabilityInsurance = liabilityFileExists && isStringDateinTheFuture(liabilityExpiry)  ? null : liabilityInsurance
                     }
                 }
+            }
+
+            //Training
+            const status = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Status').parentElement.querySelector('.item').textContent
+            
+            //If they are onboarding the training list is smaller than if they are registered
+            if (status != 'Onboarding') {
+                practicalTrainingListBeforeCompliant.push(...swMandatoryWithin6MonthPractical)
+                flexebeeTrainingListBeforeCompliant.push(...swMandatoryWithin6MonthFlexebee)
+            }
+            
+            
+            //Add the training headings, but then remove them if there are no outstanding courses
+            training += `</br><b>Classroom Training</b>`
+            if (!addTraining(practicalTrainingListBeforeCompliant)) {
+                training = training.replaceAll('</br><b>Classroom Training</b>', '')
+            }
+            
+            training += `</br><a href="https://portal.flexebee.co.uk/"><b>Flexebee Training</b></a>`
+            if (!addTraining(flexebeeTrainingListBeforeCompliant)) {
+                training = training.replaceAll('</br></br><a href="https://portal.flexebee.co.uk/"><b>Flexebee Training</b></a>', '')
             }
 
             //Copy text with HTML tags when pasting into Outlook, remove them when pasting into WhatsApp
