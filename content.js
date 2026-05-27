@@ -2189,21 +2189,23 @@ function addCheckRecButton() {
                 dbsButton.click()
                 await waitABit(300)
 
-                //They arn't British, check if there is an overseas police check file
+                //Check if there is an overseas police check file
                 const overseasPoliceCheckExists = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Overseas police check (only if applicable)').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
                 overseasPoliceCheck =  overseasPoliceCheckExists ? null : overseasPoliceCheck
-                if (['British', 'English', 'Irish', 'Scottish', 'Northern Irish'].includes(nationality.trim())) {
-                    overseasPoliceCheck = null
-                }
+
 
                 //Check the DBS file exists and is in date
                 const dbsExists = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'DBS certificate').closest('.form-control-group').querySelectorAll('.FileUploadListItemTimestamp').length > 0
                 const dbsExiryDate = Array.from(Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'DBS').closest('.FormHeader').parentElement.querySelectorAll('SPAN')).find(e => e.textContent.trim() === 'Annual Expiry date').closest('.form-control-group').querySelector('input').value
                 dbs = dbsExists && isStringDateinTheFuture(dbsExiryDate) ? null : dbs
             }
+            
+            //If they are British, they don't need an overseas police check, we can check this even if the dbsContainer hasn't been filled in
+            if (['British', 'English', 'Irish', 'Scottish', 'Northern Irish'].includes(nationality.trim())) {
+                overseasPoliceCheck = null
+            }
 
             //Proof address section
-
             const poaContainer = Array.from(document.querySelectorAll('*')).find(e => e.textContent.trim() === 'Proof of address Documentation').closest('.FormHeader').querySelectorAll('.SubformSummaryItem')
             if (poaContainer.length > 0) {
                 
