@@ -1843,18 +1843,18 @@ function addCheckDBSButton() {
                 if (inputDate <= today) {
                     // .setMonth() automatically handles the year increment if month > 11
                     inputDate.setMonth(inputDate.getMonth() + 3)
+
+                    //Format back to DD/MM/YYYY and change the input
+                    const formattedDate = [
+                        String(inputDate.getDate()).padStart(2, '0'),
+                        String(inputDate.getMonth() + 1).padStart(2, '0'),
+                        inputDate.getFullYear()
+                    ].join('/')
+
+                    threeMonthUSInput.value = formattedDate
+                    threeMonthUSInput.dispatchEvent(new Event('input', { bubbles: true }))
+                    threeMonthUSInput.dispatchEvent(new Event('change', { bubbles: true }))
                 }
-
-                // 4. Format back to DD/MM/YYYY and change the input
-                const formattedDate = [
-                    String(inputDate.getDate()).padStart(2, '0'),
-                    String(inputDate.getMonth() + 1).padStart(2, '0'),
-                    inputDate.getFullYear()
-                ].join('/')
-
-                threeMonthUSInput.value = formattedDate
-                threeMonthUSInput.dispatchEvent(new Event('input', { bubbles: true }))
-                threeMonthUSInput.dispatchEvent(new Event('change', { bubbles: true }))
             }
 
 
