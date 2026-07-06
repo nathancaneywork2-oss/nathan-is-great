@@ -1288,7 +1288,7 @@ function checkAndAddTrainingMessageButtons(){
                 }
 
                 if (classroomString.length > 12) {
-                    finalText += 'Classroom courses will need to be booked by you, I have listed some approved providers below, please send the certificates here before the expiry dates.\n\n• RG Reed - rgreedtraining.co.uk\n• KAOM (PMVA only) - kaom.co.uk \n• Health and Safety Group - healthandsafetygroup.com \n• Care Force - careforcetrainings.co.uk \n\n'
+                    finalText += 'Classroom courses will need to be booked by you, I have listed some approved providers below, please send the certificates here before the expiry dates.\n\n• RG Reed - rgreedtraining.co.uk\n• KAOM (PMVA only) - kaom.co.uk \n• Health and Safety Group (please also tick child life support when booking) - healthandsafetygroup.com \n• Care Force - careforcetrainings.co.uk \n\n'
                 } else{
                     classroomString = ''
                 }
@@ -1923,6 +1923,7 @@ function addCheckRecButton() {
                         display: -webkit-box;
                         display: -moz-box;
                         display: -ms-flexbox;
+                        flex-direction: column;
                         -moz-box-align: center;
                         -ms-box-align: center;
                         -webkit-box-align: center;
@@ -2368,6 +2369,7 @@ function addCheckRecButton() {
             // }
 
             const rec__circle = document.querySelector('.rec__circle')
+            rec__circle.style.display = 'block'
             rec__circle.style.width = '700px'
             rec__circle.style.height = '600px'
             rec__circle.style.backgroundColor = 'rgba(255, 255, 255, 0.9)'
