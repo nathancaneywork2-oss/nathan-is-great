@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Nathan is great",
-  "version": "5.3",
+  "version": "5.4",
   "description": "Does lots of things, some of them useful.",
   "permissions": ["tabs", "downloads", "storage"],
   "background": {
@@ -10,7 +10,7 @@
   "content_scripts": [
     {
       "matches": ["https://www.vantage-modules.co.uk/*"],
-      "js": ["content.js"]
+      "js": ["xlsx.bundle.js", "content.js"]
     },
     {
       "matches": ["https://secure.crbonline.gov.uk/crsc/*"], 

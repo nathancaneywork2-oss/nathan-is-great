@@ -50,6 +50,8 @@ const courseList = [
     {course: 'PMVA (Practical)', yearsValid: 1},
     {course: 'Pressure area care', yearsValid: 1},
     {course: 'Preventing Radicalization', yearsValid: 3},
+    {course: 'Safeguarding Adults Level 2', yearsValid: 3},
+    {course: 'Safeguarding Children Level 2', yearsValid: 3},
     {course: 'Safeguarding  Adults Level 3', yearsValid: 3},
     {course: 'Safeguarding Children Level 3', yearsValid: 3},
     {course: 'Substance Misuse', yearsValid: 3},
@@ -151,6 +153,7 @@ document.addEventListener("input", () => {
 
 // Run all my lovely functions when the page first loads, but them it 8.5 seconds to load.
 setTimeout(() => {
+    addSchedule2ReportButton()
     addCheckRecButton()
     addDownloadS2StuffButton()
     dateFormat()
@@ -740,7 +743,7 @@ function addMandatoryTrainingButton(){
                         document.querySelector('#fire').checked = true
                         document.querySelector('#first-aid-adults').checked = true
                         document.querySelector('#first-aid-paediatrics').checked = true
-                        document.querySelector('#food').checked = true
+                        document.querySelector('#food').checked = false
                         document.querySelector('#GDPR').checked = false
                         document.querySelector('#HASG').checked = true
                         document.querySelector('#Infection').checked = true
@@ -2449,4 +2452,381 @@ function convertHTMLToText(text){
         .replaceAll('<a href="https://www.gov.uk/prove-right-to-work/get-a-share-code-online">Share code</a>', 'Please generate a share code here https://www.gov.uk/prove-right-to-work/get-a-share-code-online')
 }
 
+function loadXlsxLibrary() {
+    return new Promise((resolve, reject) => {
+        if (window.XLSX) {
+            resolve(window.XLSX)
+            return
+        }
 
+        const script = document.createElement('script')
+        script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.3/dist/xlsx.full.min.js'
+        script.onload = () => resolve(window.XLSX)
+        script.onerror = () => reject(new Error('Failed to load XLSX library'))
+        document.head.appendChild(script)
+    })
+}
+
+function exportResultsTableToXlsx() {
+    const table = document.querySelector('.resultsTable')
+
+    if (!table) {
+        console.warn('No results table found to export')
+        return
+    }
+
+    if (!window.XLSX) {
+        console.error('XLSX library is not loaded. Check manifest.json and file path.')
+        return
+    }
+
+    try {
+        const XLSX = window.XLSX
+        
+        const thinBorder = { style: 'thin', color: { rgb: 'CCCCCC' } };
+        const cellBorders = { top: thinBorder, bottom: thinBorder, left: thinBorder, right: thinBorder };
+
+        // Base styles
+        const headerStyle = {
+            font: { name: 'Arial', sz: 12, bold: true },
+            fill: { fgColor: { rgb: 'EFEFEF' } },
+            alignment: { vertical: 'center', horizontal: 'center', wrapText: true },
+            border: cellBorders
+        };
+
+        const defaultBodyStyle = {
+            font: { name: 'Arial', sz: 11 },
+            alignment: { vertical: 'center', horizontal: 'center', wrapText: true },
+            border: cellBorders
+        };
+
+        const allRows = Array.from(table.querySelectorAll('tr')).filter(row => {
+            return row.textContent && row.textContent.trim().length > 0;
+        });
+
+        // First, extract header text so we can identify the columns to format
+        const headers = Array.from(allRows[0].querySelectorAll('th, td')).map(cell => 
+            (cell.textContent || '').replace(/\s+/g, ' ').trim()
+        );
+
+        const colWidths = [];
+        const today = new Date();
+
+        const rows = allRows.map((row, rowIndex) => {
+            return Array.from(row.querySelectorAll('th, td')).map((cell, colIndex) => {
+                const text = (cell.textContent || '').replace(/\s+/g, ' ').trim();
+                
+                if (!colWidths[colIndex]) colWidths[colIndex] = 0;
+                colWidths[colIndex] = Math.max(colWidths[colIndex], text.length);
+
+                // Default style assignment
+                let currentStyle = rowIndex === 0 ? { ...headerStyle } : { ...defaultBodyStyle };
+
+                // Apply conditional formatting to data rows in Safeguarding columns
+                if (rowIndex > 0) {
+                    const headerName = headers[colIndex].toLowerCase();
+
+                    const threeYearlyCourses = ['safeguarding', 'child sexual exploitation', 'substance misuse', 'medication', 'food', 'epilepsy', 'county lines', 'moving and handling']
+                    const oneYearlyCourses = ['pmva', 'basic life support', 'learning disabilities']
+                    
+                    // Match specific training columns
+                    if (threeYearlyCourses.some(term => headerName.includes(term))) {
+                        // Attempt to parse DD/MM/YYYY date format
+                        const dateParts = text.split('/');
+                        if (dateParts.length === 3) {
+                            const day = parseInt(dateParts[0], 10);
+                            const month = parseInt(dateParts[1], 10) - 1; // JS months are 0-11
+                            const year = parseInt(dateParts[2], 10);
+                            const trainingDate = new Date(year, month, day);
+
+                            if (!isNaN(trainingDate.getTime())) {
+                                // Calculate difference in days
+                                const diffTime = today - trainingDate;
+                                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                                // Re-clone style object to avoid mutating defaultBodyStyle globally
+                                currentStyle = {
+                                    ...defaultBodyStyle,
+                                    fill: { fgColor: { rgb: 'FFFFFF' } } // Fallback default white
+                                };
+
+                                if (diffDays >= 1095) {
+                                    // Expired (Red)
+                                    currentStyle.fill = { fgColor: { rgb: 'FF0000' } };
+                                } else if (diffDays >= 1065) {
+                                    // Expiring within 30 days (Amber)
+                                    currentStyle.fill = { fgColor: { rgb: 'FFC000' } };
+                                    currentStyle.font = { ...currentStyle.font, color: { rgb: '000000' } };
+                                }
+                            }
+                        }
+                    } else if (oneYearlyCourses.some(term => headerName.includes(term))) {
+                        // Attempt to parse DD/MM/YYYY date format
+                        const dateParts = text.split('/');
+                        if (dateParts.length === 3) {
+                            const day = parseInt(dateParts[0], 10);
+                            const month = parseInt(dateParts[1], 10) - 1; // JS months are 0-11
+                            const year = parseInt(dateParts[2], 10);
+                            const trainingDate = new Date(year, month, day);
+
+                            if (!isNaN(trainingDate.getTime())) {
+                                // Calculate difference in days
+                                const diffTime = today - trainingDate;
+                                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                                // Re-clone style object to avoid mutating defaultBodyStyle globally
+                                currentStyle = {
+                                    ...defaultBodyStyle,
+                                    fill: { fgColor: { rgb: 'FFFFFF' } } // Fallback default white
+                                };
+
+                                if (diffDays >= 365) {
+                                    // Expired (Red)
+                                    currentStyle.fill = { fgColor: { rgb: 'FF0000' } };
+                                } else if (diffDays >= 335) {
+                                    // Expiring within 30 days (Amber)
+                                    currentStyle.fill = { fgColor: { rgb: 'FFC000' } };
+                                    currentStyle.font = { ...currentStyle.font, color: { rgb: '000000' } };
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return { v: text, s: currentStyle };
+            });
+        });
+
+        const worksheet = XLSX.utils.aoa_to_sheet(rows);
+
+        // Set column widths
+        worksheet['!cols'] = colWidths.map((_, colIndex) => {
+            const headerText = headers[colIndex] || '';
+            if (headerText.includes(' ') && headerText.length > 12) {
+                return { wch: 15 };
+            }
+            return { wch: Math.max(colWidths[colIndex] + 3, 11) };
+        });
+
+        // Set row heights
+        worksheet['!rows'] = allRows.map((_, rowIndex) => ({
+            hpt: rowIndex === 0 ? 52 : 28
+        }));
+
+        const workbook = XLSX.utils.book_new()
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Schedule 2')
+
+        const workbookBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+        const blob = new Blob([workbookBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+
+        const link = document.createElement('a')
+        link.href = URL.createObjectURL(blob)
+        link.download = 'schedule-2-report.xlsx'
+        document.body.appendChild(link)
+        link.click()
+        link.remove()
+        URL.revokeObjectURL(link.href)
+    } catch (error) {
+        console.error('Failed to export Excel workbook', error)
+    }
+}
+
+function addSchedule2ReportButton() {
+    //If we are on the S2 Report page
+    if (window.location.href == 'https://www.vantage-modules.co.uk/ECS/Secure/Reporting/Index?reportId=612') {
+        //Keep checking if the Schedule 2 heading is on screen
+        let s2Interval = setInterval(() => {
+            let s2Heading = document.querySelector('.ReportTitlePreview')
+            
+            if (s2Heading && s2Heading.textContent == 'Schedule 2') {
+                //If it is, clear the interval and add the new button
+                clearInterval(s2Interval)
+                
+                s2Heading.insertAdjacentHTML('beforeend', `
+                    <style>
+                        .s2__formatButon {
+                            background: transparent;
+                            border: 1ps solid black;
+                            color: #2f3542;
+                            padding: 10px 16px;
+                            font-size: 13px;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: .2s ease;
+                            margin-left: 20px;
+                            transform: translateY(-3px);
+                        }
+                        
+                        .s2__formatButon:hover {
+                            background: #f3f4f6;
+                            color: #111827;
+                        }
+                        
+                        .s2__formatButon:active {
+                            background: #e5e7eb;
+                        }
+                    </style>
+                
+                    <button class="s2__formatButon">Format S2</button>
+                `)
+
+                document.addEventListener('click', (e)=>{
+                    if (e.target.classList.contains('s2__formatButon')) {
+                        s2ReportClick()
+                    }
+                })
+                
+            }
+        }, 500)
+    }
+
+    function s2ReportClick(){
+        // First remove all the the pointless blue group rows 
+        const resultsTableAnnoyingRows = document.querySelectorAll('.resultsTable .resultsGroupHeader')
+        resultsTableAnnoyingRows.forEach((row)=>{
+            row.remove()
+        })
+
+        // Then add new columns for the below courses
+        const rowsToAdd = {
+            'Safeguarding Children Level 3': '',
+            'Child sexual exploitation': '',
+            'PMVA (Practical)': '',
+            'Substance Misuse': '',
+            'Basic Life Support Paediatrics': '',
+            'Medication Online': '',
+            'Food hygiene': '',
+            'Learning disabilities': '',
+            'County Lines and knife crime': '',
+            'Moving and Handling (Practical)': '',
+            'Epilepsy': '',
+            'Basic Life Support Adults': ''
+        }
+        const table = document.querySelector('.resultsTable thead')
+        if (table) {
+            const topRow = table.querySelector('.resultsTableRow')
+            const topRowArray = Array.from(topRow)
+            const courseHeading = topRowArray.find((th) => th.textContent == 'Course')
+            for (let course in rowsToAdd) {
+                topRow.insertAdjacentHTML('beforeend', `<th style="background-color:#FFFFFF; color: #000000" class="resultsTableHeader ">${course}</th>`)
+            }
+        }
+
+        // Then scrape the date values for the new course columns
+        const allRows = document.querySelectorAll('.resultsDataRow')
+        let currentPerson = 0
+        for (let i = 0; i < allRows.length; i++) {
+            const cells = allRows[i].querySelectorAll('td')
+            if (cells[3].textContent != ' " " ') {
+                currentPerson++
+
+                allRows[i].insertAdjacentHTML('beforeend', `
+                    <td class="resultsTableCell CPL3${currentPerson}">Yes</td>
+                    <td class="resultsTableCell CSE${currentPerson}">Yes</td>
+                    <td class="resultsTableCell PMVA${currentPerson}">Yes</td>
+                    <td class="resultsTableCell SUB${currentPerson}">Yes</td>
+                    <td class="resultsTableCell BLSP${currentPerson}">Yes</td>
+                    <td class="resultsTableCell MED${currentPerson}">Yes</td>
+                    <td class="resultsTableCell FOOD${currentPerson}">Yes</td>
+                    <td class="resultsTableCell LD${currentPerson}">Yes</td>
+                    <td class="resultsTableCell CL${currentPerson}">Yes</td>
+                    <td class="resultsTableCell MH${currentPerson}">Yes</td>
+                    <td class="resultsTableCell EPILEPSY${currentPerson}">Yes</td>
+                    <td class="resultsTableCell BLSA${currentPerson}">Yes</td>
+                `)
+                
+
+
+            } else{
+                if (cells[12].textContent == 'Safeguarding Children Level 3') {
+                    document.querySelector(`.CPL3${currentPerson}`).textContent = cells[13].textContent
+                }
+                
+                if (cells[12].textContent == 'Child sexual exploitation') {
+                    document.querySelector(`.CSE${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'PMVA (Practical)') {
+                    document.querySelector(`.PMVA${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'Substance Misuse') {
+                    document.querySelector(`.SUB${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'Basic Life Support Paediatrics') {
+                    document.querySelector(`.BLSP${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'Medication Online') {
+                    document.querySelector(`.MED${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'Food hygiene') {
+                    document.querySelector(`.FOOD${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'Learning disabilities') {
+                    document.querySelector(`.LD${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'County Lines and knife crime') {
+                    document.querySelector(`.CL${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'Moving and Handling (Practical)') {
+                    document.querySelector(`.MH${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'Epilepsy') {
+                    document.querySelector(`.EPILEPSY${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'Basic Life Support Adults') {
+                    document.querySelector(`.BLSA${currentPerson}`).textContent = cells[13].textContent
+                }
+                
+                allRows[i].remove()
+            }
+        }
+
+        //Remove the hidden rows
+        const resultsTableHiddenRows = document.querySelectorAll('.resultsTableRow .resultsTableHidden')
+        resultsTableHiddenRows.forEach((row)=>{
+            row.remove()
+        })
+
+        // Remove the course and date next due cells from the top row
+        const topRowRE = document.querySelectorAll('.resultsTableRow th')
+        topRowRE[10].remove()
+        topRowRE[11].remove()
+
+        // Remove the course and date next due cells from everywhere else
+        const rowsRE = document.querySelectorAll('.resultsTableRow')
+        rowsRE.forEach((row) => {
+            const cells = row.querySelectorAll('.resultsTableCell')
+            
+            // Check to ensure the cells actually exist before removing
+            if (cells[11]) cells[11].remove()
+            if (cells[10]) cells[10].remove()
+        })
+
+
+        //<span class="ReportResultsExportToExcel"><i class="fa fa-file-excel-o"></i><a>Export to Excel</a></span>
+        document.querySelector('.ReportResultsExportToExcel').remove()
+        document.querySelector('.ShowPivot').insertAdjacentHTML('afterend',`
+            <span class="ReportResultsExportToExcel excelsior">
+                <i class="fa fa-file-excel-o excelsior"></i>
+                <a class="excelsior">Export to Excel</a>
+            </span>
+        `)
+
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.excelsior')) {
+                exportResultsTableToXlsx()
+            }
+        })
+
+    }
+
+}
