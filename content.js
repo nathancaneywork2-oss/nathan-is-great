@@ -2489,7 +2489,7 @@ function exportResultsTableToXlsx() {
         // Base styles
         const headerStyle = {
             font: { name: 'Arial', sz: 12, bold: true },
-            fill: { fgColor: { rgb: 'EFEFEF' } },
+            fill: { patternType: 'solid', fgColor: { rgb: 'EFEFEF' } }, // Added patternType
             alignment: { vertical: 'center', horizontal: 'center', wrapText: true },
             border: cellBorders
         };
@@ -2517,6 +2517,9 @@ function exportResultsTableToXlsx() {
                 if (word === 'pmva') {
                     return 'PMVA'
                 }
+                if (word === 'DBS') {
+                    return 'DBS'
+                }
                 if (word === '(practical)') {
                     return '(Practical)'
                 }
@@ -2535,70 +2538,32 @@ function exportResultsTableToXlsx() {
                 // Default style assignment
                 let currentStyle = rowIndex === 0 ? { ...headerStyle } : { ...defaultBodyStyle };
 
-                // Apply conditional formatting to data rows in Safeguarding columns
+                // Apply conditional formatting to any date cell in DD/MM/YYYY format
                 if (rowIndex > 0) {
-                    const headerName = headers[colIndex].toLowerCase();
+                    const headerName = (headers[colIndex] || '').trim();
+                    const excludedHeaders = ['date of birth', 'dbs issue date'];
 
-                    const threeYearlyCourses = ['safeguarding', 'child sexual exploitation', 'substance misuse', 'medication', 'food', 'epilepsy', 'county lines', 'moving and handling']
-                    const oneYearlyCourses = ['pmva', 'basic life support', 'learning disabilities']
-                    
-                    // Match specific training columns
-                    if (threeYearlyCourses.some(term => headerName.includes(term))) {
-                        // Attempt to parse DD/MM/YYYY date format
+                    if (!excludedHeaders.includes(headerName.toLowerCase())) {
                         const dateParts = text.split('/');
                         if (dateParts.length === 3) {
                             const day = parseInt(dateParts[0], 10);
                             const month = parseInt(dateParts[1], 10) - 1; // JS months are 0-11
                             const year = parseInt(dateParts[2], 10);
-                            const trainingDate = new Date(year, month, day);
+                            const dueDate = new Date(year, month, day);
 
-                            if (!isNaN(trainingDate.getTime())) {
-                                // Calculate difference in days
-                                const diffTime = today - trainingDate;
+                            if (!isNaN(dueDate.getTime())) {
+                                const diffTime = dueDate - today;
                                 const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
-                                // Re-clone style object to avoid mutating defaultBodyStyle globally
                                 currentStyle = {
                                     ...defaultBodyStyle,
-                                    fill: { fgColor: { rgb: 'FFFFFF' } } // Fallback default white
+                                    fill: { patternType: 'solid', fgColor: { rgb: 'FFFFFF' } }
                                 };
 
-                                if (diffDays >= 1095) {
-                                    // Expired (Red)
-                                    currentStyle.fill = { fgColor: { rgb: 'FF0000' } };
-                                } else if (diffDays >= 1065) {
-                                    // Expiring within 30 days (Amber)
-                                    currentStyle.fill = { fgColor: { rgb: 'FFC000' } };
-                                    currentStyle.font = { ...currentStyle.font, color: { rgb: '000000' } };
-                                }
-                            }
-                        }
-                    } else if (oneYearlyCourses.some(term => headerName.includes(term))) {
-                        // Attempt to parse DD/MM/YYYY date format
-                        const dateParts = text.split('/');
-                        if (dateParts.length === 3) {
-                            const day = parseInt(dateParts[0], 10);
-                            const month = parseInt(dateParts[1], 10) - 1; // JS months are 0-11
-                            const year = parseInt(dateParts[2], 10);
-                            const trainingDate = new Date(year, month, day);
-
-                            if (!isNaN(trainingDate.getTime())) {
-                                // Calculate difference in days
-                                const diffTime = today - trainingDate;
-                                const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-                                // Re-clone style object to avoid mutating defaultBodyStyle globally
-                                currentStyle = {
-                                    ...defaultBodyStyle,
-                                    fill: { fgColor: { rgb: 'FFFFFF' } } // Fallback default white
-                                };
-
-                                if (diffDays >= 365) {
-                                    // Expired (Red)
-                                    currentStyle.fill = { fgColor: { rgb: 'FF0000' } };
-                                } else if (diffDays >= 335) {
-                                    // Expiring within 30 days (Amber)
-                                    currentStyle.fill = { fgColor: { rgb: 'FFC000' } };
+                                if (diffDays < 0) {
+                                    currentStyle.fill = { patternType: 'solid', fgColor: { rgb: 'FF0000' } };
+                                } else if (diffDays <= 30) {
+                                    currentStyle.fill = { patternType: 'solid', fgColor: { rgb: 'FFC000' } };
                                     currentStyle.font = { ...currentStyle.font, color: { rgb: '000000' } };
                                 }
                             }
@@ -2610,7 +2575,7 @@ function exportResultsTableToXlsx() {
             });
         });
 
-        //Freeze pane the top row (not working)
+        //Freeze pane the top row (Note: Standard SheetJS community build doesn't support freeze/styling properties)
         const worksheet = XLSX.utils.aoa_to_sheet(rows)
         worksheet['!freeze'] = { xSplit: 0, ySplit: 1 }
 
@@ -2631,12 +2596,12 @@ function exportResultsTableToXlsx() {
         const workbook = XLSX.utils.book_new()
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Schedule 2')
 
-        const workbookBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' })
+        const workbookBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array', cellStyles: true })
         const blob = new Blob([workbookBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
 
         const link = document.createElement('a')
         link.href = URL.createObjectURL(blob)
-        link.download = 'schedule-2-report.xlsx'
+        link.download = 'Schedule 2 Report.xlsx'
         document.body.appendChild(link)
         link.click()
         link.remove()
