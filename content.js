@@ -2510,11 +2510,24 @@ function exportResultsTableToXlsx() {
         );
 
         const colWidths = [];
-        const today = new Date();
+        const today = new Date()
+
+        const titleCase = (value) => {
+            return value.toLowerCase().split(' ').map(word => {
+                if (word === 'pmva') {
+                    return 'PMVA'
+                }
+                if (word === '(practical)') {
+                    return '(Practical)'
+                }
+                return word.charAt(0).toUpperCase() + word.slice(1)
+            }).join(' ')
+        }
 
         const rows = allRows.map((row, rowIndex) => {
             return Array.from(row.querySelectorAll('th, td')).map((cell, colIndex) => {
-                const text = (cell.textContent || '').replace(/\s+/g, ' ').trim();
+                const rawText = (cell.textContent || '').replace(/\s+/g, ' ').trim();
+                const text = rowIndex === 0 ? titleCase(rawText) : rawText;
                 
                 if (!colWidths[colIndex]) colWidths[colIndex] = 0;
                 colWidths[colIndex] = Math.max(colWidths[colIndex], text.length);
@@ -2597,7 +2610,9 @@ function exportResultsTableToXlsx() {
             });
         });
 
-        const worksheet = XLSX.utils.aoa_to_sheet(rows);
+        //Freeze pane the top row (not working)
+        const worksheet = XLSX.utils.aoa_to_sheet(rows)
+        worksheet['!freeze'] = { xSplit: 0, ySplit: 1 }
 
         // Set column widths
         worksheet['!cols'] = colWidths.map((_, colIndex) => {
@@ -2632,53 +2647,51 @@ function exportResultsTableToXlsx() {
 }
 
 function addSchedule2ReportButton() {
-    //If we are on the S2 Report page
-    if (window.location.href == 'https://www.vantage-modules.co.uk/ECS/Secure/Reporting/Index?reportId=612') {
-        //Keep checking if the Schedule 2 heading is on screen
-        let s2Interval = setInterval(() => {
-            let s2Heading = document.querySelector('.ReportTitlePreview')
+    //Keep checking if we are on the S2 Report page and the Schedule 2 heading is on screen
+    let s2Interval = setInterval(() => {
+        let s2Heading = document.querySelector('.ReportTitlePreview')
+        
+        if (window.location.href == 'https://www.vantage-modules.co.uk/ECS/Secure/Reporting/Index?reportId=612' && s2Heading && s2Heading.textContent == 'Schedule 2') {
+            //If it is, clear the interval and add the new button
+            clearInterval(s2Interval)
             
-            if (s2Heading && s2Heading.textContent == 'Schedule 2') {
-                //If it is, clear the interval and add the new button
-                clearInterval(s2Interval)
-                
-                s2Heading.insertAdjacentHTML('beforeend', `
-                    <style>
-                        .s2__formatButon {
-                            background: transparent;
-                            border: 1ps solid black;
-                            color: #2f3542;
-                            padding: 10px 16px;
-                            font-size: 13px;
-                            font-weight: 600;
-                            cursor: pointer;
-                            transition: .2s ease;
-                            margin-left: 20px;
-                            transform: translateY(-3px);
-                        }
-                        
-                        .s2__formatButon:hover {
-                            background: #f3f4f6;
-                            color: #111827;
-                        }
-                        
-                        .s2__formatButon:active {
-                            background: #e5e7eb;
-                        }
-                    </style>
-                
-                    <button class="s2__formatButon">Format S2</button>
-                `)
-
-                document.addEventListener('click', (e)=>{
-                    if (e.target.classList.contains('s2__formatButon')) {
-                        s2ReportClick()
+            s2Heading.insertAdjacentHTML('beforeend', `
+                <style>
+                    .s2__formatButon {
+                        background: transparent;
+                        border: 1ps solid black;
+                        color: #2f3542;
+                        padding: 10px 16px;
+                        font-size: 13px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: .2s ease;
+                        margin-left: 20px;
+                        transform: translateY(-3px);
                     }
-                })
-                
-            }
-        }, 500)
-    }
+                    
+                    .s2__formatButon:hover {
+                        background: #f3f4f6;
+                        color: #111827;
+                    }
+                    
+                    .s2__formatButon:active {
+                        background: #e5e7eb;
+                    }
+                </style>
+            
+                <button class="s2__formatButon">Format S2</button>
+            `)
+
+            document.addEventListener('click', (e)=>{
+                if (e.target.classList.contains('s2__formatButon')) {
+                    s2ReportClick()
+                }
+            })
+            
+        }
+    }, 500)
+        
 
     function s2ReportClick(){
         // First remove all the the pointless blue group rows 
@@ -2693,6 +2706,7 @@ function addSchedule2ReportButton() {
             'Child sexual exploitation': '',
             'PMVA (Practical)': '',
             'Substance Misuse': '',
+            'Basic Life Support Adults': '',
             'Basic Life Support Paediatrics': '',
             'Medication Online': '',
             'Food hygiene': '',
@@ -2700,7 +2714,6 @@ function addSchedule2ReportButton() {
             'County Lines and knife crime': '',
             'Moving and Handling (Practical)': '',
             'Epilepsy': '',
-            'Basic Life Support Adults': ''
         }
         const table = document.querySelector('.resultsTable thead')
         if (table) {
@@ -2725,6 +2738,7 @@ function addSchedule2ReportButton() {
                     <td class="resultsTableCell CSE${currentPerson}">Yes</td>
                     <td class="resultsTableCell PMVA${currentPerson}">Yes</td>
                     <td class="resultsTableCell SUB${currentPerson}">Yes</td>
+                    <td class="resultsTableCell BLSA${currentPerson}">Yes</td>
                     <td class="resultsTableCell BLSP${currentPerson}">Yes</td>
                     <td class="resultsTableCell MED${currentPerson}">Yes</td>
                     <td class="resultsTableCell FOOD${currentPerson}">Yes</td>
@@ -2732,7 +2746,6 @@ function addSchedule2ReportButton() {
                     <td class="resultsTableCell CL${currentPerson}">Yes</td>
                     <td class="resultsTableCell MH${currentPerson}">Yes</td>
                     <td class="resultsTableCell EPILEPSY${currentPerson}">Yes</td>
-                    <td class="resultsTableCell BLSA${currentPerson}">Yes</td>
                 `)
                 
 
@@ -2754,7 +2767,19 @@ function addSchedule2ReportButton() {
                     document.querySelector(`.SUB${currentPerson}`).textContent = cells[13].textContent
                 }
 
+                if (cells[12].textContent == 'Basic Life Support Adults') {
+                    document.querySelector(`.BLSA${currentPerson}`).textContent = cells[13].textContent
+                }
+
                 if (cells[12].textContent == 'Basic Life Support Paediatrics') {
+                    document.querySelector(`.BLSP${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'ILS Adults (Practical)') {
+                    document.querySelector(`.BLSA${currentPerson}`).textContent = cells[13].textContent
+                }
+
+                if (cells[12].textContent == 'ILS Paediatrics (Practical)') {
                     document.querySelector(`.BLSP${currentPerson}`).textContent = cells[13].textContent
                 }
 
@@ -2780,10 +2805,6 @@ function addSchedule2ReportButton() {
 
                 if (cells[12].textContent == 'Epilepsy') {
                     document.querySelector(`.EPILEPSY${currentPerson}`).textContent = cells[13].textContent
-                }
-
-                if (cells[12].textContent == 'Basic Life Support Adults') {
-                    document.querySelector(`.BLSA${currentPerson}`).textContent = cells[13].textContent
                 }
                 
                 allRows[i].remove()
