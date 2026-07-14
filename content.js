@@ -2651,9 +2651,15 @@ function addSchedule2ReportButton() {
     let s2Interval = setInterval(() => {
         let s2Heading = document.querySelector('.ReportTitlePreview')
         
-        if (window.location.href == 'https://www.vantage-modules.co.uk/ECS/Secure/Reporting/Index?reportId=612' && s2Heading && s2Heading.textContent == 'Schedule 2') {
+        if (window.location.href == 'https://www.vantage-modules.co.uk/ECS/Secure/Reporting/Index?reportId=612' && s2Heading && s2Heading.textContent == 'Schedule 2') {            
             //If it is, clear the interval and add the new button
             clearInterval(s2Interval)
+
+            //Change the results per page selector so now 10000 is an option
+            const resultsPerPageSelector = document.querySelector('.ReportResultsPagesToShowInput')
+            const resultOptions = resultsPerPageSelector.querySelectorAll('option')
+            resultOptions[resultOptions.length - 1].innerText = 10000
+
             
             s2Heading.insertAdjacentHTML('beforeend', `
                 <style>
@@ -2689,8 +2695,10 @@ function addSchedule2ReportButton() {
                 }
             })
             
+        } else{
+            console.log(`S2 Report button not added, window.location.href: ${window.location.href}`)
         }
-    }, 500)
+    }, 1000)
         
 
     function s2ReportClick(){
@@ -2734,18 +2742,18 @@ function addSchedule2ReportButton() {
                 currentPerson++
 
                 allRows[i].insertAdjacentHTML('beforeend', `
-                    <td class="resultsTableCell CPL3${currentPerson}">Yes</td>
-                    <td class="resultsTableCell CSE${currentPerson}">Yes</td>
-                    <td class="resultsTableCell PMVA${currentPerson}">Yes</td>
-                    <td class="resultsTableCell SUB${currentPerson}">Yes</td>
-                    <td class="resultsTableCell BLSA${currentPerson}">Yes</td>
-                    <td class="resultsTableCell BLSP${currentPerson}">Yes</td>
-                    <td class="resultsTableCell MED${currentPerson}">Yes</td>
-                    <td class="resultsTableCell FOOD${currentPerson}">Yes</td>
-                    <td class="resultsTableCell LD${currentPerson}">Yes</td>
-                    <td class="resultsTableCell CL${currentPerson}">Yes</td>
-                    <td class="resultsTableCell MH${currentPerson}">Yes</td>
-                    <td class="resultsTableCell EPILEPSY${currentPerson}">Yes</td>
+                    <td class="resultsTableCell CPL3${currentPerson}"></td>
+                    <td class="resultsTableCell CSE${currentPerson}"></td>
+                    <td class="resultsTableCell PMVA${currentPerson}"></td>
+                    <td class="resultsTableCell SUB${currentPerson}"></td>
+                    <td class="resultsTableCell BLSA${currentPerson}"></td>
+                    <td class="resultsTableCell BLSP${currentPerson}"></td>
+                    <td class="resultsTableCell MED${currentPerson}"></td>
+                    <td class="resultsTableCell FOOD${currentPerson}"></td>
+                    <td class="resultsTableCell LD${currentPerson}"></td>
+                    <td class="resultsTableCell CL${currentPerson}"></td>
+                    <td class="resultsTableCell MH${currentPerson}"></td>
+                    <td class="resultsTableCell EPILEPSY${currentPerson}"></td>
                 `)
                 
 
