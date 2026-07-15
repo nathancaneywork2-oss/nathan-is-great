@@ -2517,7 +2517,7 @@ function exportResultsTableToXlsx() {
                 if (word === 'pmva') {
                     return 'PMVA'
                 }
-                if (word === 'DBS') {
+                if (word === 'Dbs') {
                     return 'DBS'
                 }
                 if (word === '(practical)') {
@@ -2599,9 +2599,12 @@ function exportResultsTableToXlsx() {
         const workbookBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array', cellStyles: true })
         const blob = new Blob([workbookBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
 
+        const todayForFileName = new Date()
+        const fileDate = `${todayForFileName.getDate().toString().padStart(2, '0')}.${(todayForFileName.getMonth() + 1).toString().padStart(2, '0')}.${todayForFileName.getFullYear()}`
+
         const link = document.createElement('a')
         link.href = URL.createObjectURL(blob)
-        link.download = 'Schedule 2 Report.xlsx'
+        link.download = `Schedule 2 Report ${fileDate}.xlsx`
         document.body.appendChild(link)
         link.click()
         link.remove()
@@ -2806,7 +2809,7 @@ function addSchedule2ReportButton() {
         })
 
 
-        //<span class="ReportResultsExportToExcel"><i class="fa fa-file-excel-o"></i><a>Export to Excel</a></span>
+        // Replace the Vantage export to excel button with our one that looks the same
         document.querySelector('.ReportResultsExportToExcel').remove()
         document.querySelector('.ShowPivot').insertAdjacentHTML('afterend',`
             <span class="ReportResultsExportToExcel excelsior">
@@ -2818,6 +2821,71 @@ function addSchedule2ReportButton() {
         document.addEventListener('click', (e) => {
             if (e.target.closest('.excelsior')) {
                 exportResultsTableToXlsx()
+            }
+        })
+
+
+        // Change the colour of the HTML cells based on the dates where needed
+        const finishedTable = document.querySelector(".resultsTable")
+        if (!finishedTable) return
+
+        const headers = Array.from(finishedTable.querySelectorAll("thead th"))
+        
+        // 1. Find indexes of columns we want to ignore
+        const ignoredIndexes = []
+        headers.forEach((th, index) => {
+            const headerText = th.textContent.trim().toLowerCase();
+            if (headerText === "date of birth" || headerText === "dbs issue date") {
+                ignoredIndexes.push(index)
+            }
+        });
+
+        // Get current date details for threshold calculations
+        const now = new Date()
+        
+        // Calculate the "one month from now" threshold
+        const oneMonthFromNow = new Date()
+        oneMonthFromNow.setMonth(now.getMonth() + 1)
+
+        // 2. Helper function to parse "DD/MM/YYYY" format
+        function parseDate(dateStr) {
+            const parts = dateStr.trim().split("/")
+            if (parts.length !== 3) return null
+            
+            const day = parseInt(parts[0], 10)
+            const month = parseInt(parts[1], 10) - 1 // JS months are 0-11
+            const year = parseInt(parts[2], 10)
+            
+            const parsedDate = new Date(year, month, day)
+            // Ensure it parsed into a valid date object
+            return isNaN(parsedDate.getTime()) ? null : parsedDate
+        }
+
+        // 3. Loop through data rows (excluding the header rows)
+        const rows = finishedTable.querySelectorAll("tbody tr, tr.resultsDataRow")
+        
+        rows.forEach(row => {
+            const cells = row.cells
+            
+            for (let i = 0; i < cells.length; i++) {
+                // Skip the column if it's "Date of birth" or "DBS Issue Date"
+                if (ignoredIndexes.includes(i)) continue
+
+                const cellText = cells[i].textContent.trim()
+                if (!cellText) continue
+
+                // Try to parse the cell's text as a date
+                const cellDate = parseDate(cellText)
+                
+                if (cellDate) {
+                    if (cellDate < now) {
+                        // Date is in the past (Red)
+                        cells[i].style.backgroundColor = "#ff6060"
+                    } else if (cellDate >= now && cellDate <= oneMonthFromNow) {
+                        // Date is within the next month (Yellow)
+                        cells[i].style.backgroundColor = "#ffd148"
+                    }
+                }
             }
         })
 
