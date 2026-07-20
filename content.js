@@ -2727,60 +2727,60 @@ function addSchedule2ReportButton() {
 
 
             } else{
-                if (cells[12].textContent == 'Safeguarding Children Level 3') {
-                    document.querySelector(`.CPL3${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Safeguarding Children Level 3') {
+                    document.querySelector(`.CPL3${currentPerson}`).textContent = cells[14].textContent
                 }
                 
-                if (cells[12].textContent == 'Child sexual exploitation') {
-                    document.querySelector(`.CSE${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Child sexual exploitation') {
+                    document.querySelector(`.CSE${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'PMVA (Practical)') {
-                    document.querySelector(`.PMVA${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'PMVA (Practical)') {
+                    document.querySelector(`.PMVA${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'Substance Misuse') {
-                    document.querySelector(`.SUB${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Substance Misuse') {
+                    document.querySelector(`.SUB${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'Basic Life Support Adults') {
-                    document.querySelector(`.BLSA${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Basic Life Support Adults') {
+                    document.querySelector(`.BLSA${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'Basic Life Support Paediatrics') {
-                    document.querySelector(`.BLSP${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Basic Life Support Paediatrics') {
+                    document.querySelector(`.BLSP${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'ILS Adults (Practical)') {
-                    document.querySelector(`.BLSA${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'ILS Adults (Practical)') {
+                    document.querySelector(`.BLSA${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'ILS Paediatrics (Practical)') {
-                    document.querySelector(`.BLSP${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'ILS Paediatrics (Practical)') {
+                    document.querySelector(`.BLSP${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'Medication Online') {
-                    document.querySelector(`.MED${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Medication Online') {
+                    document.querySelector(`.MED${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'Food hygiene') {
-                    document.querySelector(`.FOOD${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Food hygiene') {
+                    document.querySelector(`.FOOD${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'Learning disabilities') {
-                    document.querySelector(`.LD${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Learning disabilities') {
+                    document.querySelector(`.LD${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'County Lines and knife crime') {
-                    document.querySelector(`.CL${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'County Lines and knife crime') {
+                    document.querySelector(`.CL${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'Moving and Handling (Practical)') {
-                    document.querySelector(`.MH${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Moving and Handling (Practical)') {
+                    document.querySelector(`.MH${currentPerson}`).textContent = cells[14].textContent
                 }
 
-                if (cells[12].textContent == 'Epilepsy') {
-                    document.querySelector(`.EPILEPSY${currentPerson}`).textContent = cells[13].textContent
+                if (cells[13].textContent == 'Epilepsy') {
+                    document.querySelector(`.EPILEPSY${currentPerson}`).textContent = cells[14].textContent
                 }
                 
                 allRows[i].remove()
@@ -2795,8 +2795,8 @@ function addSchedule2ReportButton() {
 
         // Remove the course and date next due cells from the top row
         const topRowRE = document.querySelectorAll('.resultsTableRow th')
-        topRowRE[10].remove()
         topRowRE[11].remove()
+        topRowRE[12].remove()
 
         // Remove the course and date next due cells from everywhere else
         const rowsRE = document.querySelectorAll('.resultsTableRow')
@@ -2805,7 +2805,7 @@ function addSchedule2ReportButton() {
             
             // Check to ensure the cells actually exist before removing
             if (cells[11]) cells[11].remove()
-            if (cells[10]) cells[10].remove()
+            if (cells[12]) cells[12].remove()
         })
 
 
